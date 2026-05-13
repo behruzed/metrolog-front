@@ -1,247 +1,38 @@
-@use "sass:color";
-
-// Metro Style Tokens
-$primary: #006ce4;
-$accent: #00f2fe;
-$success: #10b981;
-$danger: #ef4444;
-$warning: #f59e0b;
-$slate: #1e293b;
-$white: #ffffff;
-
-@mixin glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 2rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .journals-container {
-  padding-bottom: 2rem;
-  
+  padding: 1rem 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+
   .header-section {
-    margin-bottom: 3rem;
-    
-    h2 {
-      font-size: 2.5rem;
-      font-weight: 900;
-      letter-spacing: -0.05em;
-      text-transform: uppercase;
-      font-style: italic;
-      margin-bottom: 0.5rem;
-    }
-    
-    p {
-      font-size: 0.75rem;
-      font-weight: 800;
-      opacity: 0.4;
-      text-transform: uppercase;
-      letter-spacing: 0.25em;
-    }
+    margin-bottom: 4rem;
   }
 
   .journal-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
+    margin-top: 2rem;
   }
 
-  .journal-card {
-    @include glass-card;
-    padding: 2.5rem;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    
-    &:hover {
-      transform: translateY(-10px) scale(1.02);
-      border-color: rgba($primary, 0.3);
-      background: rgba($primary, 0.05);
-      
-      .icon-box {
-        transform: rotate(10deg) scale(1.1);
-        background: rgba($primary, 0.2);
-      }
-      
-      .arrow {
-        transform: translateX(5px);
-        opacity: 1;
-      }
-    }
-
-    .icon-box {
-      width: 4.5rem;
-      height: 4.5rem;
-      border-radius: 1.5rem;
-      background: rgba($white, 0.05);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 2rem;
-      transition: all 0.4s ease;
-      color: $primary;
-    }
-
-    h3 {
-      font-size: 1.25rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      font-style: italic;
-      margin-bottom: 0.75rem;
-      letter-spacing: -0.02em;
-    }
-
-    p {
-      font-size: 0.85rem;
-      font-weight: 500;
-      opacity: 0.5;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-
-    .card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba($white, 0.05);
-      
-      .badge-code {
-        font-size: 0.65rem;
-        font-weight: 900;
-        padding: 0.35rem 0.75rem;
-        border-radius: 0.5rem;
-        background: rgba($white, 0.05);
-        letter-spacing: 0.1em;
-      }
-      
-      .arrow {
-        color: $primary;
-        opacity: 0.4;
-        transition: all 0.3s ease;
-      }
-    }
-  }
-
-  .history-table {
-    @include glass-card;
-    padding: 2rem;
-    overflow: hidden;
-    
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 0.5rem;
-      
-      th {
-        font-size: 0.65rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        opacity: 0.3;
-        padding: 1rem 1.5rem;
-        border: none;
-      }
-      
-      td {
-        padding: 1.25rem 1.5rem;
-        background: rgba($white, 0.02);
-        border: none;
-        font-weight: 700;
-        font-size: 0.85rem;
-        
-        &:first-child {
-          border-radius: 1rem 0 0 1rem;
-        }
-        &:last-child {
-          border-radius: 0 1rem 1rem 0;
-        }
-      }
-      
-      tr:hover td {
-        background: rgba($primary, 0.08);
-      }
-    }
+  .active-tracker, .history-table {
+    margin-top: 2rem;
   }
 }
 
-.search-container {
-  margin-bottom: 2.5rem;
-  max-width: 500px;
-  
-  .search-input-wrapper {
-    position: relative;
-    
-    svg {
-      position: absolute;
-      left: 1.25rem;
-      top: 50%;
-      transform: translateY(-50%);
-      opacity: 0.3;
-      pointer-events: none;
-    }
-    
-    input {
-      padding-left: 3.5rem !important;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
-  }
-}
-
-// Modal Styles
 .modal-metro {
   .modal-content {
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 2.5rem;
+    background: var(--metro-glass) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important;
+    border: 1px solid var(--metro-glass-border) !important;
+    border-radius: 3rem !important;
     overflow: hidden;
-    color: white;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 40px 100px var(--metro-glass-shadow) !important;
   }
 
   .icon-badge {
     width: 80px;
     height: 80px;
-    background: rgba($primary, 0.1);
+    background: var(--metro-accent-glass);
     border-radius: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba($primary, 0.2);
-  }
-
-  .btn-metro {
-    border-radius: 1.5rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-style: italic;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    &.btn-primary {
-      background: $primary;
-      border: none;
-      box-shadow: 0 10px 20px rgba($primary, 0.3);
-      
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 30px rgba($primary, 0.4);
-        background: lighten($primary, 5%);
-      }
-    }
-    
-    &.btn-outline {
-      background: transparent;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      color: white;
-      
-      &:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.2);
-        transform: translateY(-3px);
-      }
-    }
   }
 }

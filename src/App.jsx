@@ -13,7 +13,9 @@ import Profile from './pages/Profile';
 import Messages from './pages/Messages';
 import Journals from './pages/Journals';
 import DispatcherPanel from './pages/DispatcherPanel';
+import Archive from './pages/Archive';
 import DashboardLayout from './components/DashboardLayout';
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const { station, employee, theme } = useAuthStore();
@@ -24,7 +26,14 @@ const App = () => {
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [theme]);
+
+    // Apply distance theme
+    const distanceThemes = ['theme-chilonzor', 'theme-ozbekiston', 'theme-yunusobod', 'theme-halqa'];
+    distanceThemes.forEach(t => document.documentElement.classList.remove(t));
+    if (station?.distance) {
+      document.documentElement.classList.add(`theme-${station.distance}`);
+    }
+  }, [theme, station]);
 
   // Protected route wrapper
   const ProtectedRoute = ({ children }) => {
@@ -34,8 +43,9 @@ const App = () => {
 
   return (
     <LoadingProvider>
+      <Toaster position="top-center" reverseOrder={false} />
       <Router>
-        <div className="min-h-screen bg-[var(--metro-background)] text-[var(--metro-foreground)] transition-colors duration-500 overflow-hidden">
+        <div className={`min-h-screen bg-[var(--metro-background)] text-[var(--metro-foreground)] transition-colors duration-500 overflow-hidden ${station?.distance ? `distance-glow-${station.distance}` : ''}`}>
         <AnimatePresence mode="wait">
           <Routes>
             {/* Landing Page */}
@@ -59,6 +69,7 @@ const App = () => {
               <Route path="/dashboard/profile" element={<Profile />} />
               <Route path="/dashboard/messages" element={<Messages />} />
               <Route path="/dashboard/journals/*" element={<Journals />} />
+              <Route path="/dashboard/archive" element={<Archive />} />
               <Route path="/dashboard/dispatcher" element={<DispatcherPanel />} />
             </Route>
 

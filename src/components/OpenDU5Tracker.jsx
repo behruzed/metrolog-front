@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, Button, Badge, Spinner, Alert, Modal } from 'react-bootstrap';
-import { User, Clock, MapPin, CheckCircle2, AlertCircle, ExternalLink, ChevronRight } from 'lucide-react';
+import { Spinner, Table, Modal, Button } from 'react-bootstrap';
+import { CheckCircle2, AlertCircle, X } from 'lucide-react';
 import axios from '../api/axios';
 import { toast } from 'react-hot-toast';
 
-const OpenDU5Tracker = () => {
+const OpenDU5Tracker = ({ onUpdate }) => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [closing, setClosing] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [entryToClose, setEntryToClose] = useState(null);
+  const [confirmData, setConfirmData] = useState({ exit_location: '', exit_time: '' });
+  const [stations, setStations] = useState([]);
 
   useEffect(() => {
     fetchOpenEntries();
-    const interval = setInterval(fetchOpenEntries, 30000); // Auto refresh every 30s
+    fetchStations();
+    const interval = setInterval(fetchOpenEntries, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchStations = async () => {
+    try {
+      const { data } = await axios.get('/auth/stations');
+      setStations(data.map(s => s.name));
+    } catch (err) {
+      setStations(['Bodomzor', 'Shahriston', 'Yunusobod', 'Turkiston', 'Minor', 'Abdulla Qodiriy', 'Paxtakor', 'Chorsu']);
+    }
+  };
 
   const fetchOpenEntries = async () => {
     try {
@@ -31,22 +42,28 @@ const OpenDU5Tracker = () => {
 
   const handleCloseClick = (entry) => {
     setEntryToClose(entry);
+    const now = new Date();
+    const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    setConfirmData({
+      exit_location: entry.data?.exit_location || stations[0] || '',
+      exit_time: localNow
+    });
     setShowConfirmModal(true);
   };
 
   const confirmClose = async () => {
     if (!entryToClose) return;
-    
     setClosing(entryToClose._id);
     try {
       await axios.put(`/journals/entries/${entryToClose._id}/close`, {
-        exit_time: new Date().toISOString(),
-        exit_location: 'Ushbu bekat' // Could be expanded to allow selecting location
+        exit_time: confirmData.exit_time,
+        exit_location: confirmData.exit_location
       });
-      toast.success('Xodim(lar)ning tuneldan chiqqani tasdiqlandi.');
+      toast.success('Tasdiqlandi.');
       fetchOpenEntries();
+      if (onUpdate) onUpdate();
     } catch (err) {
-      toast.error('Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
+      toast.error('Xatolik.');
     } finally {
       setClosing(null);
       setShowConfirmModal(false);
@@ -54,141 +71,104 @@ const OpenDU5Tracker = () => {
     }
   };
 
-  if (loading && entries.length === 0) {
-    return (
-      <div className="text-center py-20 opacity-40">
-        <Spinner animation="border" variant="primary" className="mb-4" />
-        <p className="font-black uppercase tracking-widest text-[10px]">Yuklanmoqda...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="d-flex align-items-center justify-content-between mb-8">
-        <div>
-          <h3 className="text-2xl font-black uppercase italic m-0">Tuneldagi Xodimlar</h3>
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-40 m-0 mt-1">Hozirda tunnelda bo'lgan xodimlar ro'yxati</p>
+    <div className="journal-1c-container">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="m-0">Tuneldagi Xodimlar Monitoringi</h2>
+        <div className="text-danger" style={{ fontWeight: 'bold' }}>
+          Faol: {entries.length}
         </div>
-        <Badge bg="primary" className="px-4 py-2 rounded-xl border-2 border-primary/20 text-sm font-black">
-          {entries.length} FAOL
-        </Badge>
       </div>
 
-      {entries.length === 0 ? (
-        <Alert variant="info" className="rounded-3xl border-0 bg-primary/5 text-primary p-10 text-center shadow-inner">
-          <div className="p-6 bg-primary/10 rounded-full w-fit mx-auto mb-6">
-            <CheckCircle2 size={48} />
-          </div>
-          <h4 className="font-black uppercase mb-2">Hamma xodimlar chiqqan</h4>
-          <p className="m-0 opacity-60">Hozirda tunnelda hech kim yo'q.</p>
-        </Alert>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AnimatePresence mode='popLayout'>
-            {entries.map((entry) => (
-              <motion.div
-                key={entry._id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              >
-                <Card className="card-modern border-2 border-primary/10 shadow-xl hover:border-primary/30 transition-all overflow-hidden group">
-                  <div className="p-6">
-                    <div className="d-flex justify-content-between align-items-start mb-6">
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary group-hover:text-white transition-colors">
-                          <User size={24} />
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase opacity-40 m-0">Kiritilgan vaqt</p>
-                          <p className="m-0 font-black text-sm">{new Date(entry.createdAt).toLocaleTimeString('uz-UZ')}</p>
-                        </div>
-                      </div>
-                      <Badge bg="warning" className="px-3 py-1.5 rounded-lg border-2 border-warning/20 text-[10px] font-black uppercase tracking-wider">
-                        TUNELDA
-                      </Badge>
-                    </div>
-
-                    <div className="space-y-4 mb-8">
-                      {entry.data.personnel?.map((person, idx) => (
-                        <div key={idx} className="p-4 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10">
-                          <div className="d-flex justify-content-between align-items-center">
-                            <div>
-                              <p className="m-0 font-black text-base">{person.fullName}</p>
-                              <p className="m-0 text-[10px] font-bold opacity-60 uppercase tracking-widest">Guvohnoma: {person.certificateId}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="d-flex flex-wrap gap-3 mb-8">
-                      <div className="d-flex align-items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/10">
-                        <Clock size={14} className="opacity-40" />
-                        <span className="text-[11px] font-bold opacity-60">Maqsad: {entry.data.purpose || 'Ishchi guruh'}</span>
-                      </div>
-                      <div className="d-flex align-items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/10">
-                        <MapPin size={14} className="opacity-40" />
-                        <span className="text-[11px] font-bold opacity-60">Chiqish: {entry.data.exit_location || 'Belgilanmagan'}</span>
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={() => handleCloseClick(entry)}
-                      disabled={closing === entry._id}
-                      className="w-100 btn-metro btn-primary py-4 rounded-2xl shadow-lg group-hover:scale-[1.02] transition-transform d-flex align-items-center justify-content-center gap-3"
-                    >
-                      {closing === entry._id ? (
-                        <Spinner animation="border" size="sm" />
-                      ) : (
-                        <>
-                          <CheckCircle2 size={20} />
-                          <span className="font-black uppercase tracking-widest text-sm">Tuneldan chiqdi</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+      {loading && entries.length === 0 ? (
+        <div className="text-center py-4"><Spinner animation="border" size="sm" /></div>
+      ) : entries.length === 0 ? (
+        <div className="journal-1c-card text-center py-4 text-success">
+          <b>Tunnelda hech kim yo'q</b>
         </div>
+      ) : (
+        <table className="journal-1c-table">
+          <thead>
+            <tr>
+              <th>Kirish vaqti</th>
+              <th>Xodimlar</th>
+              <th>Eshik / Maqsad</th>
+              <th>Mo'ljal Chiqish</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry._id}>
+                <td style={{ whiteSpace: 'nowrap' }}>{entry.data?.recordedAt || new Date(entry.createdAt).toLocaleTimeString('uz-UZ')}</td>
+                <td>
+                  <div style={{ fontSize: '12px' }}>
+                    {entry.data.personnel?.map((p, i) => (
+                      <div key={i}>• {p.fullName} ({p.certificateId})</div>
+                    ))}
+                  </div>
+                </td>
+                <td>
+                  <div style={{ fontSize: '11px' }}><b>Eshik:</b> {entry.data.entrance_door || '-'}</div>
+                  <div style={{ fontSize: '11px' }}><b>Maqsad:</b> {entry.data.purpose}</div>
+                </td>
+                <td>
+                  <div style={{ fontSize: '11px' }}><b>Bekat:</b> {entry.data.exit_location}</div>
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  <button
+                    className="journal-1c-btn journal-1c-btn-primary"
+                    onClick={() => handleCloseClick(entry)}
+                    disabled={closing === entry._id}
+                  >
+                    {closing === entry._id ? '...' : 'Chiqishni tasdiqlash'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
 
-      {/* Confirmation Modal */}
-      <Modal 
-        show={showConfirmModal} 
-        onHide={() => !closing && setShowConfirmModal(false)}
-        centered
-        className="modal-metro"
-      >
-        <Modal.Body className="p-10 text-center">
-          <div className="mb-8">
-            <div className="icon-badge mx-auto mb-4 bg-primary/10 text-primary p-4 rounded-full inline-block">
-              <AlertCircle size={48} />
-            </div>
-            <h3 className="text-2xl font-black uppercase italic m-0">Tasdiqlash</h3>
-            <p className="opacity-60 uppercase tracking-widest text-[11px] mt-4 max-w-[300px] mx-auto">
-              Xodim(lar)ning tuneldan chiqqaniga ishonchingiz komilmi?
-            </p>
+      <Modal show={showConfirmModal} onHide={() => !closing && setShowConfirmModal(false)} centered size="md">
+        <Modal.Header closeButton style={{ padding: '10px 15px' }}>
+          <Modal.Title style={{ fontSize: '16px', fontWeight: 'bold' }}>Chiqishni Tasdiqlash</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <div className="journal-1c-form-group mb-3">
+            <label className="d-block mb-1">Xodim ushbu bekatdan chiqdi:</label>
+            <select 
+              className="journal-1c-input w-100"
+              value={confirmData.exit_location}
+              onChange={(e) => setConfirmData(prev => ({ ...prev, exit_location: e.target.value }))}
+            >
+              {stations.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div className="journal-1c-form-group mb-4">
+            <label className="d-block mb-1">Chiqish vaqti:</label>
+            <input 
+              type="datetime-local" 
+              className="journal-1c-input w-100"
+              value={confirmData.exit_time}
+              onChange={(e) => setConfirmData(prev => ({ ...prev, exit_time: e.target.value }))}
+            />
           </div>
           
-          <div className="flex flex-col gap-4">
-            <Button 
-              className="btn-metro btn-primary py-4 text-sm font-black uppercase tracking-[0.2em]"
+          <div className="d-flex gap-2 justify-content-end mt-4">
+            <button 
+              className="journal-1c-btn journal-1c-btn-primary" 
               onClick={confirmClose}
               disabled={closing}
             >
-              Ha, Ishonchim komil
-            </Button>
+              {closing ? 'Saqlanmoqda...' : 'Tasdiqlash va Saqlash'}
+            </button>
             <button 
-              className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] opacity-30 hover:opacity-100 transition-all border-0 bg-transparent"
+              className="btn-metro-back" 
               onClick={() => setShowConfirmModal(false)}
               disabled={closing}
             >
-              Bekor qilish
+              <X size={14} /> Bekor qilish
             </button>
           </div>
         </Modal.Body>

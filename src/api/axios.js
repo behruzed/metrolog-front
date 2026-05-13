@@ -29,4 +29,30 @@ instance.interceptors.request.use(
   }
 );
 
+// Response Interceptor to handle expired tokens
+instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const { logoutEmployee, logoutStation } = useAuthStore.getState();
+      const message = error.response.data?.message?.toLowerCase() || '';
+
+      if (message.includes('jwt expired') || message.includes('unauthorized')) {
+        if (message.includes('employee')) {
+          logoutEmployee();
+          window.location.href = '/employee-login';
+        } else if (message.includes('station')) {
+          logoutStation();
+          window.location.href = '/station-login';
+        } else {
+          // Default to employee logout if unsure
+          logoutEmployee();
+          window.location.href = '/employee-login';
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default instance;

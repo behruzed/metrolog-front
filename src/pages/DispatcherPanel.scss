@@ -1,90 +1,42 @@
 @use "sass:color";
 
 // Metro Style Tokens
-$primary: #006ce4;
+$primary: #007aff;
 $danger: #ef4444;
-$success: #10b981;
+$success: #22c55e;
 $white: #ffffff;
 
-@mixin glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 2.5rem;
-  transition: all 0.4s ease;
-}
-
 .dispatcher-container {
-  padding-bottom: 2rem;
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
   
   .panel-header {
-    margin-bottom: 3.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     
     .title-group {
       h2 {
-        font-size: 2.5rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        font-style: italic;
-        letter-spacing: -0.05em;
         margin: 0;
-        
         span { color: $danger; }
-      }
-      p {
-        font-size: 0.75rem;
-        font-weight: 800;
-        opacity: 0.4;
-        text-transform: uppercase;
-        letter-spacing: 0.25em;
-        margin-top: 0.5rem;
-      }
-    }
-    
-    .live-status {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.75rem 1.5rem;
-      background: rgba($danger, 0.1);
-      border: 1px solid rgba($danger, 0.2);
-      border-radius: 1.25rem;
-      
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: $danger;
-        box-shadow: 0 0 15px $danger;
-        animation: pulse shadow-pulse 2s infinite;
-      }
-      
-      span {
-        font-size: 0.65rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: $danger;
       }
     }
   }
 
   .main-controls {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 4rem;
+    align-items: start;
     
-    @media (max-width: 1200px) {
+    @media (max-width: 1400px) {
       grid-template-columns: 1fr;
+      gap: 3rem;
     }
   }
 
   .broadcast-card {
-    @include glass-panel;
-    padding: 3rem;
     position: relative;
     overflow: hidden;
     
@@ -93,119 +45,33 @@ $white: #ffffff;
       position: absolute;
       top: 2rem;
       right: 2rem;
-      font-size: 5rem;
+      font-size: 6rem;
       font-weight: 950;
-      opacity: 0.02;
+      opacity: 0.03;
       pointer-events: none;
-    }
-    
-    .form-title {
-      font-size: 1.5rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      font-style: italic;
-      margin-bottom: 2.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      letter-spacing: -0.05em;
     }
   }
 
   .status-monitor {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    
     .monitor-card {
-      @include glass-panel;
-      padding: 2.5rem;
-      
       h4 {
-        font-size: 0.75rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        opacity: 0.4;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
+        margin-bottom: 2.5rem;
       }
-      
-      .station-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        
-        .station-item {
-          padding: 1.25rem;
-          background: rgba($white, 0.02);
-          border-radius: 1.25rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          transition: all 0.3s ease;
-          border: 1px solid transparent;
-          
-          &:hover {
-            background: rgba($white, 0.05);
-            border-color: rgba($primary, 0.2);
-            transform: translateX(5px);
-          }
-          
-          .name {
-            font-weight: 700;
-            font-size: 0.9rem;
-          }
-          
-          .status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            
-            .indicator {
-              width: 8px;
-              height: 8px;
-              border-radius: 50%;
-              background: $success;
-            }
-            
-            span {
-              font-size: 0.65rem;
-              font-weight: 800;
-              text-transform: uppercase;
-              opacity: 0.5;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .urgent-switch {
-    background: rgba($danger, 0.05);
-    border: 1.5px solid rgba($danger, 0.1);
-    padding: 2rem;
-    border-radius: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      background: rgba($danger, 0.1);
-    }
-    
-    &.active {
-      background: rgba($danger, 0.2);
-      border-color: $danger;
     }
   }
 }
 
-@keyframes shadow-pulse {
-  0% { box-shadow: 0 0 0 0 rgba($danger, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba($danger, 0); }
-  100% { box-shadow: 0 0 0 0 rgba($danger, 0); }
+// Custom Animations for the Live Dot
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
 }
+
+.live-status {
+  .dot {
+    animation: pulse 2s infinite ease-in-out;
+  }
+}
+

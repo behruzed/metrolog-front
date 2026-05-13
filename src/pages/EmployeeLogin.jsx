@@ -15,7 +15,7 @@ const EmployeeLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { station, setEmployee } = useAuthStore();
+  const { station, setEmployee, logoutStation } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -201,10 +201,13 @@ const EmployeeLogin = () => {
 
             <div className="pt-12 border-t border-metro-border flex items-center justify-between">
                <button 
-                onClick={() => navigate('/station-login')}
-                className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest opacity-30 hover:opacity-100 hover:text-metro-primary transition-all bg-transparent border-0 text-metro-fg"
+                onClick={() => {
+                  logoutStation();
+                  navigate('/station-login');
+                }}
+                className="btn-metro-back"
                >
-                 <ArrowLeft size={16} /> Boshqa Stansiya
+                 <ArrowLeft size={16} strokeWidth={3} /> Boshqa Stansiya
                </button>
                <span className="text-[9px] font-black opacity-20 text-metro-fg">SECURE NODE: 771-UX</span>
             </div>

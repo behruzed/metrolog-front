@@ -35,35 +35,38 @@ const DispatcherPanel = () => {
 
   return (
     <div className="dispatcher-container">
-      <header className="panel-header">
+      <header className="panel-header mb-12 d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-6">
         <div className="title-group">
-          <h2>Markaziy <span>Dispetcherlik</span> Pulti</h2>
-          <p>Global operatsion boshqaruv va tezkor e'lonlar markazi</p>
+          <h2 className="title-liquid text-4xl">Markaziy <span className="text-danger italic">Dispetcherlik</span></h2>
+          <p className="subtitle-liquid">Global operatsion boshqaruv markazi</p>
         </div>
-        <div className="live-status">
-          <div className="dot" />
-          <span>Jonli Efir Faol</span>
+        <div className="badge-glass px-6 py-3 border-danger/30 text-danger bg-danger/5 d-flex align-items-center gap-3">
+          <div className="dot w-2 h-2 rounded-full bg-danger shadow-[0_0_15px_rgba(239,68,68,0.5)] animate-pulse" />
+          <span className="font-black uppercase tracking-widest text-[9px]">Jonli Efir Faol</span>
         </div>
       </header>
 
       <div className="main-controls">
         {/* Left: Broadcast Form */}
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
-          className="broadcast-card shadow-2xl"
+          className="card-metro p-10 bg-transparent"
         >
-          <h3 className="form-title text-metro-foreground">
-            <Send className="text-primary" size={28} /> Tezkor E'lon
+          <h3 className="title-liquid text-2xl mb-8 d-flex align-items-center gap-4">
+            <div className="p-3 bg-metro-accent-glass rounded-xl shadow-lg">
+              <Send className="text-primary" size={24} />
+            </div>
+            Tezkor E'lon
           </h3>
 
           <Form onSubmit={handleSubmit} className="space-y-10">
-            <Form.Group className="space-y-4">
-              <Form.Label className="text-[10px] font-black uppercase tracking-[0.25em] opacity-40 ml-1">Xabar Mazmuni</Form.Label>
+            <Form.Group className="form-group-liquid">
+              <Form.Label className="form-label-liquid">Xabar Mazmuni</Form.Label>
               <Form.Control 
                 as="textarea"
                 required
-                className="input-metro min-h-[150px] resize-none text-lg font-bold p-6 bg-white/5 border-2"
+                className="input-metro-industrial min-h-[180px] text-lg"
                 placeholder="Rasmiy xabar matnini kiriting..."
                 value={formData.text}
                 onChange={(e) => setFormData({ ...formData, text: e.target.value })}
@@ -72,10 +75,10 @@ const DispatcherPanel = () => {
 
             <Row className="g-4">
               <Col md={6}>
-                <Form.Group className="space-y-3">
-                  <Form.Label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">Yuborish Ko'lami</Form.Label>
+                <Form.Group className="form-group-liquid">
+                  <Form.Label className="form-label-liquid">Yuborish Ko'lami</Form.Label>
                   <Form.Select 
-                    className="input-metro h-14 font-black cursor-pointer bg-white/5 border-2 pr-10"
+                    className="input-metro-industrial cursor-pointer"
                     value={formData.targetType}
                     onChange={(e) => setFormData({ ...formData, targetType: e.target.value })}
                   >
@@ -88,15 +91,15 @@ const DispatcherPanel = () => {
 
               {formData.targetType !== 'all' && (
                 <Col md={6}>
-                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-3">
-                    <Form.Label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="form-group-liquid">
+                    <Form.Label className="form-label-liquid">
                       Target ID
                     </Form.Label>
                     <Form.Control 
                       type="text" 
                       required
-                      className="input-metro h-14 font-bold bg-white/5 border-2"
-                      placeholder="Stansiya nomi yoki yo'nalish..."
+                      className="input-metro-industrial"
+                      placeholder="Identifikator..."
                       value={formData.targetId}
                       onChange={(e) => setFormData({ ...formData, targetId: e.target.value })}
                     />
@@ -106,29 +109,29 @@ const DispatcherPanel = () => {
             </Row>
 
             <div 
-              className={`urgent-switch ${formData.isUrgent ? 'active shadow-lg shadow-danger/20' : ''}`}
+              className={`glass-panel p-6 d-flex align-items-center gap-4 cursor-pointer transition-all border-2 ${formData.isUrgent ? 'border-danger bg-danger/10' : 'border-transparent bg-white/5'}`}
               onClick={() => setFormData({ ...formData, isUrgent: !formData.isUrgent })}
             >
-              <div className={`p-3 rounded-xl ${formData.isUrgent ? 'bg-danger text-white' : 'bg-danger/10 text-danger'} transition-all`}>
-                <Zap size={20} />
+              <div className={`p-4 rounded-2xl ${formData.isUrgent ? 'bg-danger text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]' : 'bg-danger/10 text-danger'} transition-all`}>
+                <Zap size={24} />
               </div>
               <div>
-                <p className={`text-sm font-black m-0 leading-none mb-1 ${formData.isUrgent ? 'text-danger' : 'text-metro-foreground'}`}>SHOSHILINCH E'LON</p>
-                <p className="text-[9px] font-black opacity-30 uppercase tracking-widest m-0 leading-none">Ovozli va vizual signalni yoqish</p>
+                <p className={`text-sm font-black m-0 leading-none mb-2 ${formData.isUrgent ? 'text-danger' : ''}`}>SHOSHILINCH E'LON</p>
+                <p className="subtitle-liquid m-0 text-[9px]">Ovozli va vizual signalni faollashtirish</p>
               </div>
             </div>
 
             <Button 
               type="submit" 
               disabled={loading || messageSent}
-              className={`btn-metro w-100 h-16 text-lg border-0 shadow-2xl transition-all duration-500 ${
-                messageSent ? 'bg-success text-white' : 'btn-primary'
+              className={`btn-metro-primary w-100 py-4 !text-base ${
+                messageSent ? '!bg-success !border-success' : ''
               }`}
             >
               {messageSent ? (
-                <div className="d-flex align-items-center gap-3"><CheckCircle2 size={24} /> YUBORILDI</div>
+                <div className="d-flex align-items-center justify-content-center gap-3"><CheckCircle2 size={24} /> YUBORILDI</div>
               ) : (
-                <div className="d-flex align-items-center gap-3">
+                <div className="d-flex align-items-center justify-content-center gap-3">
                   {loading ? <Spinner animation="border" size="sm" /> : <Send size={24} />}
                   <span>TIZIMGA E'LON QILISH</span>
                 </div>
@@ -138,22 +141,25 @@ const DispatcherPanel = () => {
         </motion.div>
 
         {/* Right: Monitoring */}
-        <div className="status-monitor">
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div className="monitor-card shadow-xl">
-              <h4><ActivityCircle size={14} className="text-primary" /> Liniyalar Holati</h4>
-              <div className="station-list">
+        <div className="status-monitor space-y-8">
+          <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}>
+            <div className="glass-panel p-10 shadow-2xl">
+              <h4 className="subtitle-liquid mb-8 d-flex align-items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                Liniyalar Holati
+              </h4>
+              <div className="space-y-4">
                 {[
                   { name: 'Chilonzor Yo\'li', status: 'Barqaror' },
                   { name: 'O\'zbekiston Yo\'li', status: 'Barqaror' },
                   { name: 'Yunusobod Yo\'li', status: 'Barqaror' },
                   { name: 'Halqa Yo\'li', status: 'Nazoratda' }
                 ].map((line, i) => (
-                  <div key={i} className="station-item">
-                    <span className="name text-metro-foreground">{line.name}</span>
-                    <div className="status">
-                       <div className="indicator" />
-                       <span className="text-metro-foreground">{line.status}</span>
+                  <div key={i} className="glass-panel p-5 bg-white/5 border-transparent hover:border-primary/20 hover:translate-x-3 transition-all d-flex justify-content-between align-items-center">
+                    <span className="font-black text-sm">{line.name}</span>
+                    <div className="d-flex align-items-center gap-3">
+                       <div className="w-2 h-2 rounded-full bg-success shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                       <span className="subtitle-liquid m-0 text-[10px]">{line.status}</span>
                     </div>
                   </div>
                 ))}
@@ -161,12 +167,15 @@ const DispatcherPanel = () => {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
-            <div className="monitor-card shadow-xl border-top-4 border-primary">
-              <h4><ShieldAlert size={14} className="text-primary" /> Xafvsizlik Tizimi</h4>
-              <div className="p-4 bg-primary/5 rounded-2xl">
-                <p className="text-xs font-bold leading-relaxed opacity-60 text-metro-foreground m-0">
-                  <AlertCircle size={14} className="inline mr-2 text-primary" />
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
+            <div className="glass-panel p-10 border-top-4 border-primary shadow-2xl">
+              <h4 className="subtitle-liquid mb-8 d-flex align-items-center gap-3">
+                <ShieldAlert size={18} className="text-primary" />
+                Xavfsizlik Tizimi
+              </h4>
+              <div className="p-6 bg-metro-accent-glass rounded-[2rem] border border-primary/10">
+                <p className="text-xs font-bold leading-relaxed opacity-60 m-0">
+                  <AlertCircle size={16} className="inline mr-2 text-primary" />
                   Barcha stansiyalar bilan ulanish barqaror. Xavfsizlik protokollari operatsion rejimda.
                 </p>
               </div>
