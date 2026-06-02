@@ -32,7 +32,7 @@ const Navbar = ({ isDashboard = false, onToggleSidebar, isSidebarOpen }) => {
         <div className="navbar-brand-epic" onClick={() => navigate('/')}>
           <div className="logo-box-epic">M</div>
           <div className="brand-text">
-            <h1>UZ METRO</h1>
+            <h1>MetroLog</h1>
             <p>Harakat xizmati</p>
           </div>
         </div>

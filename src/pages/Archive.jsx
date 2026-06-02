@@ -149,9 +149,17 @@ const Archive = () => {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [viewMode, setViewMode] = useState('simple');
 
+  const [activePageIndex, setActivePageIndex] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState('next');
+
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    setActivePageIndex(0);
+  }, [selectedType, selectedDate]);
 
   const fetchInitialData = async () => {
     try {
@@ -231,8 +239,31 @@ const Archive = () => {
       const typeMatch = selectedType ? entry.journalTypeId?._id === selectedType._id : true;
       const dateMatch = selectedDate ? entryDate === selectedDate : true;
       return typeMatch && dateMatch;
-    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   }, [entries, selectedType, selectedDate]);
+
+  const handlePageChange = (newIndex) => {
+    if (newIndex < 0 || newIndex >= filteredEntries.length) return;
+    setFlipDirection(newIndex > activePageIndex ? 'next' : 'prev');
+    setIsFlipping(true);
+    setTimeout(() => {
+      setActivePageIndex(newIndex);
+      setIsFlipping(false);
+    }, 400);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (filteredEntries.length === 0 || isFlipping) return;
+      if (e.key === 'ArrowLeft') {
+        handlePageChange(activePageIndex - 1);
+      } else if (e.key === 'ArrowRight') {
+        handlePageChange(activePageIndex + 1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activePageIndex, filteredEntries, isFlipping]);
 
   const handlePrint = () => {
     window.print();
@@ -298,7 +329,7 @@ const Archive = () => {
         </div>
       </div>
 
-      {/* Column 3: Journals List */}
+      {/* Column 3: Journals List (Digital Journal Book) */}
       <div className="archive-column col-journals flex-1">
         <div className="column-header space-between">
           <div className="d-flex align-items-center gap-2">
@@ -306,62 +337,166 @@ const Archive = () => {
              {selectedType && <span className="selected-type-badge">{selectedType.code}</span>}
           </div>
           <div className="results-count">
-            Topilgan: <span>{filteredEntries.length}</span>
+            Bugun ushbu jurnaldan: <span>{filteredEntries.length} ta yozuv</span>
           </div>
         </div>
-        
-        <div className="journals-table-wrapper custom-scrollbar">
-          <table className="journals-table-epic">
-            <thead>
-              <tr>
-                <th>Vaqt</th>
-                <th>Harakat / Ma'lumot</th>
-                <th>Xodim</th>
-                <th>Holat</th>
-                <th>Tafsilot</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEntries.length > 0 ? (
-                filteredEntries.map(entry => (
-                  <tr key={entry._id} onClick={() => { setSelectedEntry(entry); setViewMode('simple'); setShowDetailModal(true); }}>
-                    <td className="time-col">
-                       {entry.data?.recordedAt?.split(' ')[1] || new Date(entry.createdAt).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
-                    </td>
-                    <td className="desc-col">{getActionDescription(entry)}</td>
-                    <td className="emp-col">{entry.createdBy?.name}</td>
-                    <td className="status-col">
-                      {entry.journalTypeId?.code === 'DU-5' ? (
-                        <span className={`status-badge ${entry.data?.journal_status === 'closed' ? 'success' : 'warning'}`}>
-                          {entry.data?.journal_status === 'closed' ? 'Chiqdi' : 'Tunelda'}
-                        </span>
-                      ) : entry.journalTypeId?.code === 'DU-8' ? (
-                        <span className={`status-badge ${entry.data?.journal_status === 'closed' ? 'success' : 'warning'}`}>
-                          {entry.data?.journal_status === 'closed' ? 'Topshirdi' : 'Olingan'}
-                        </span>
-                      ) : entry.journalTypeId?.code === 'DU-46' ? (
-                        <span className={`status-badge ${entry.data?.journal_status === 'closed' ? 'success' : 'warning'}`}>
-                          {entry.data?.journal_status === 'closed' ? 'Tuzatildi' : 'Nosoz'}
-                        </span>
-                      ) : (
-                        <span className={`status-badge ${entry.status === 'verified' ? 'success' : (entry.status === 'pending' ? 'warning' : 'danger')}`}>
-                          {entry.status === 'verified' ? 'Tasdiqlangan' : (entry.status === 'pending' ? 'Kutilmoqda' : 'Rad etilgan')}
-                        </span>
-                      )}
-                    </td>
-                    <td className="action-col"><Info size={18} className="info-icon" /></td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="empty-state">
-                    Ushbu sanada yozuvlar topilmadi.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+
+        <div className="digital-journal-book-wrapper custom-scrollbar">
+          {filteredEntries.length > 0 ? (
+            <div className={`digital-journal-book ${isFlipping ? 'is-flipping' : ''} flip-${flipDirection}`}>
+              {/* Left Page: General Info & Signatures */}
+              <div className="book-page left-page">
+                <div className="watermark-bg"></div>
+                <div className="ledger-header">
+                  <div className="ledger-stamp-id">QAYD № {filteredEntries[activePageIndex].data?.order_number || activePageIndex + 1}</div>
+                  <div className="ledger-date-label">
+                    {filteredEntries[activePageIndex].data?.recordedAt || new Date(filteredEntries[activePageIndex].createdAt).toLocaleString('uz-UZ')}
+                  </div>
+                </div>
+                
+                <div className="ledger-content">
+                  <span className="book-journal-code-badge">{selectedType?.code}</span>
+                  <h4 className="book-journal-title">{selectedType?.name}</h4>
+                  
+                  <div className="book-officer-info">
+                    <div className="info-badge">Mas'ul Xodim</div>
+                    <h5 className="officer-name">{filteredEntries[activePageIndex].createdBy?.name}</h5>
+                    <p className="officer-role">{filteredEntries[activePageIndex].createdBy?.role || 'Bekat Xodimi'}</p>
+                  </div>
+                  
+                  <div className="book-status-stamp-wrapper">
+                    {filteredEntries[activePageIndex].journalTypeId?.code === 'DU-5' ? (
+                      <div className={`ink-stamp ${filteredEntries[activePageIndex].data?.journal_status === 'closed' ? 'stamp-success' : 'stamp-warning'}`}>
+                        {filteredEntries[activePageIndex].data?.journal_status === 'closed' ? 'CHIQDILAR' : 'TUNELDA'}
+                      </div>
+                    ) : filteredEntries[activePageIndex].journalTypeId?.code === 'DU-8' ? (
+                      <div className={`ink-stamp ${filteredEntries[activePageIndex].data?.journal_status === 'closed' ? 'stamp-success' : 'stamp-warning'}`}>
+                        {filteredEntries[activePageIndex].data?.journal_status === 'closed' ? 'TOPSHIRILDI' : 'QABUL QILINGAN'}
+                      </div>
+                    ) : filteredEntries[activePageIndex].journalTypeId?.code === 'DU-46' ? (
+                      <div className={`ink-stamp ${filteredEntries[activePageIndex].data?.journal_status === 'closed' ? 'stamp-success' : 'stamp-warning'}`}>
+                        {filteredEntries[activePageIndex].data?.journal_status === 'closed' ? 'TUZATILDI' : 'NOSOZ'}
+                      </div>
+                    ) : (
+                      <div className={`ink-stamp ${filteredEntries[activePageIndex].status === 'verified' ? 'stamp-success' : (filteredEntries[activePageIndex].status === 'pending' ? 'stamp-warning' : 'stamp-danger')}`}>
+                        {filteredEntries[activePageIndex].status === 'verified' ? 'TASDIQLANDI' : (filteredEntries[activePageIndex].status === 'pending' ? 'KUTILMOQDA' : 'RAD ETILDI')}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="ledger-footer-left">
+                  <div className="ledger-signatures">
+                    <div className="sig-row">
+                      <span className="sig-label">Navbatchi:</span>
+                      <span className="sig-line"></span>
+                    </div>
+                  </div>
+                  <div className="ledger-stamp-box">
+                    <SecureStamp stationName={station?.name} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Spine depth line */}
+              <div className="book-spine"></div>
+
+              {/* Right Page: Operational Details */}
+              <div className="book-page right-page">
+                <div className="watermark-bg"></div>
+                <div className="ledger-header">
+                  <div className="ledger-detail-label">OPERATSION TAFSILOTLAR</div>
+                  <div className="ledger-page-num">SAHIFA {activePageIndex + 1}</div>
+                </div>
+                
+                <div className="ledger-content">
+                  <div className="ledger-ink-grid">
+                    {Object.entries(filteredEntries[activePageIndex].data || {}).map(([key, value]) => {
+                      if (['closedBy', 'recordedAt', 'journal_status'].includes(key)) return null;
+                      return (
+                        <div className="ledger-ink-card" key={key}>
+                          <div className="ledger-ink-key">
+                            {key.replace(/_/g, ' ')}:
+                          </div>
+                          <div className="ledger-ink-val">
+                            {Array.isArray(value) ? (
+                              <div className="ledger-nested-array">
+                                {value.map((item, i) => (
+                                  <div key={i} className="ledger-nested-item">
+                                    {typeof item === 'object' ? Object.entries(item).map(([k, v]) => (
+                                      <div className="ledger-nested-subrow" key={k}>
+                                        <span className="sub-key">{k.replace(/_/g, ' ')}:</span>
+                                        <span className="sub-val">{String(v)}</span>
+                                      </div>
+                                    )) : String(item)}
+                                  </div>
+                                ))}
+                              </div>
+                            ) : typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                <div className="ledger-footer-right">
+                  <button 
+                    className="book-btn-a4" 
+                    onClick={() => { setSelectedEntry(filteredEntries[activePageIndex]); setViewMode('document'); setShowDetailModal(true); }}
+                  >
+                    <Printer size={14} /> A4 HUJJAT
+                  </button>
+                  <button 
+                    className="book-btn-detail" 
+                    onClick={() => { setSelectedEntry(filteredEntries[activePageIndex]); setViewMode('simple'); setShowDetailModal(true); }}
+                  >
+                    <Info size={14} /> BATAFSIL
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Closed book cover cover */
+            <div className="closed-book-cover-container">
+              <div className="closed-book-cover">
+                <div className="book-spine"></div>
+                <div className="cover-content">
+                  <div className="cover-logo-wrapper">
+                    <FileText size={48} className="cover-logo" />
+                  </div>
+                  <h3 className="cover-title">{selectedType?.name || 'METROPOLITEN JURNALI'}</h3>
+                  <p className="cover-subtitle">{selectedType?.code || 'MA'}</p>
+                  <div className="cover-border-line"></div>
+                  <p className="cover-status-msg">Ushbu sanada jurnaldan yozuvlar topilmadi</p>
+                  <span className="cover-footer-text">O‘zbekiston Temir Yo‘llari • Metro</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+
+        {filteredEntries.length > 0 && (
+          <div className="book-navigation-bar">
+            <button 
+              className="book-nav-btn prev-btn" 
+              disabled={activePageIndex === 0 || isFlipping} 
+              onClick={() => handlePageChange(activePageIndex - 1)}
+            >
+              <ChevronLeft size={18} /> Oldingi Sahifa
+            </button>
+            <div className="book-page-indicator">
+              <span>{activePageIndex + 1}</span> / {filteredEntries.length}
+            </div>
+            <button 
+              className="book-nav-btn next-btn" 
+              disabled={activePageIndex === filteredEntries.length - 1 || isFlipping} 
+              onClick={() => handlePageChange(activePageIndex + 1)}
+            >
+              Keyingi Sahifa <ChevronRight size={18} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Detail Modals */}

@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { Container, Row, Col, Card, Button, Badge, Form, InputGroup, Spinner, Modal } from 'react-bootstrap';
-import { BookOpen, Search, Plus, ArrowRight, History, ClipboardList, X, Filter, ChevronRight, FileText, CheckCircle2, Activity, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { 
+  BookOpen, Search, Plus, ArrowRight, History, ClipboardList, X, Filter, 
+  ChevronRight, FileText, CheckCircle2, Activity, ArrowDownLeft, ArrowUpRight,
+  Shield, Key, Wrench, Zap, Clock, Database, Server, Cpu
+} from 'lucide-react';
 import axios from '../api/axios';
 import JournalForm from '../components/JournalForm';
 import JournalHistory from '../components/JournalHistory';
@@ -19,14 +23,23 @@ const Journals = () => {
   const [view, setView] = useState('list'); // 'list', 'create', 'history', 'active'
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('All'); // 'All', 'DU', 'EU'
   const [showDU2Modal, setShowDU2Modal] = useState(false);
   const [du2Action, setDu2Action] = useState('');
   const [activeTab, setActiveTab] = useState('DU-5'); // 'DU-5', 'DU-8', 'DU-46'
   const [activeCounts, setActiveCounts] = useState({ 'DU-5': 0, 'DU-8': 0, 'DU-46': 0 });
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
   useEffect(() => {
     fetchJournalTypes();
     fetchActiveCounts();
+
+    // Clock Interval
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   const fetchActiveCounts = async () => {
@@ -57,6 +70,77 @@ const Journals = () => {
     }
   };
 
+  // Stagger container animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
+  };
+
+  // Helper to customize card theme based on journal code
+  const getJournalCardDetails = (code) => {
+    switch (code) {
+      case 'DU-2':
+        return {
+          themeClass: 'card-theme-du2',
+          icon: <Shield size={26} />,
+          tagline: 'Qabul qilish va jo‘natish',
+          desc: 'Poyezdlar harakati va ularni qabul qilish-jo‘natish bo‘yicha tezkor topshiriqlar jurnali.'
+        };
+      case 'DU-5':
+        return {
+          themeClass: 'card-theme-du5',
+          icon: <BookOpen size={26} />,
+          tagline: 'Tunnel xodimlari nazorati',
+          desc: 'Tunnel va yo‘llarda xodimlarning bo‘lishini hamda ishlarni hisobga olish elektron jurnali.'
+        };
+      case 'DU-8':
+        return {
+          themeClass: 'card-theme-du8',
+          icon: <Key size={26} />,
+          tagline: 'Kalit-sterjenlar topshirish',
+          desc: 'Chiquvchi kalit-sterjenlar, kalitlar va apparatlarni topshirish hamda qabul qilish jurnali.'
+        };
+      case 'DU-46':
+        return {
+          themeClass: 'card-theme-du46',
+          icon: <Wrench size={26} />,
+          tagline: 'Texnik nosozliklar jurnali',
+          desc: 'Yo‘l va stansiya qurilmalarining nosozliklari, shikastlanishlarini ro‘yxatga olish jurnali.'
+        };
+      case 'EU-132':
+        return {
+          themeClass: 'card-theme-eu132',
+          icon: <Zap size={26} />,
+          tagline: 'Elektr ta‘minoti nazorati',
+          desc: 'Yuqori kuchlanishli tarmoqlar va elektr uskunalari ish faoliyatini nazorat qilish jurnali.'
+        };
+      case 'DU-60':
+        return {
+          themeClass: 'card-theme-du60',
+          icon: <FileText size={26} />,
+          tagline: 'Stansiya tezkor hisoboti',
+          desc: 'Stansiya navbatchisining kunlik tezkor hisoboti va poyezdlar harakatini boshqarish jurnali.'
+        };
+      default:
+        return {
+          themeClass: 'card-theme-default',
+          icon: <FileText size={26} />,
+          tagline: 'Elektron qayd daftari',
+          desc: 'Raqamli hisobot va metropoliten nazorati elektron tizimi jurnali.'
+        };
+    }
+  };
+
   const filteredTypes = journalTypes.filter(type => 
     type.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     type.code.toLowerCase().includes(searchTerm.toLowerCase())
@@ -72,6 +156,14 @@ const Journals = () => {
       return aIndex - bIndex;
     }
     return a.name.localeCompare(b.name);
+  });
+
+  // Filter based on selected category tab
+  const categoryFilteredTypes = sortedTypes.filter(type => {
+    if (categoryFilter === 'All') return true;
+    if (categoryFilter === 'DU') return type.code.startsWith('DU');
+    if (categoryFilter === 'EU') return type.code.startsWith('EU');
+    return true;
   });
 
   const handleSelectType = (type) => {
@@ -91,6 +183,8 @@ const Journals = () => {
     setShowDU2Modal(false);
   };
 
+  const totalActiveEntries = activeCounts['DU-5'] + activeCounts['DU-8'] + activeCounts['DU-46'];
+
   if (loading) {
     return (
       <div className="d-flex align-items-center justify-content-center min-vh-50">
@@ -104,97 +198,237 @@ const Journals = () => {
 
   return (
     <div className="journals-container">
-      <AnimatePresence>
+      {/* Background Ambient Blur Spots */}
+      <div className="bg-glow-blobs">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
+      </div>
+
+      <AnimatePresence mode="wait">
         {view === 'list' && (
           <motion.div
             key="list"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="header-section mb-12">
-              <div className="flex flex-col md:flex-row items-md-end justify-between gap-10">
+            {/* Header Section */}
+            <div className="header-section mb-6">
+              <div className="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
                 <div>
-                  <h1 className="title-liquid text-6xl">Raqamli <span className="text-primary italic">Jurnallar</span></h1>
-                  <p className="subtitle-liquid">Toshkent Metropoliteni Hisobot Markazi</p>
+                  <h1 className="title-liquid text-6xl mb-1">
+                    Raqamli <span className="text-primary italic">Jurnallar</span>
+                  </h1>
+                  <p className="subtitle-liquid mb-0">Toshkent Metropoliteni Hisobot Markazi</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="d-flex flex-wrap gap-3">
                   <button 
                     onClick={() => setView('active')}
                     className={`btn-metro-ghost !py-2.5 !px-6 d-flex align-items-center gap-3 ${view === 'active' ? 'active shadow-lg' : ''}`}
                   >
-                    <Activity size={18} className={view === 'active' ? 'text-primary' : 'opacity-40'} />
+                    <Activity size={18} className="text-primary" />
                     <span className="font-black text-[11px] uppercase tracking-widest">Faol Jurnallar</span>
+                    {totalActiveEntries > 0 && (
+                      <Badge bg="danger" className="rounded-pill px-2.5 py-1 text-[9px] font-extrabold shadow-sm">
+                        {totalActiveEntries}
+                      </Badge>
+                    )}
                   </button>
                   <button 
                     onClick={() => setView('history')}
                     className={`btn-metro-ghost !py-2.5 !px-6 d-flex align-items-center gap-3 ${view === 'history' ? 'active shadow-lg' : ''}`}
                   >
-                    <History size={18} className={view === 'history' ? 'text-primary' : 'opacity-40'} />
-                    <span className="font-black text-[11px] uppercase tracking-widest">Tarix</span>
+                    <History size={18} className="opacity-60" />
+                    <span className="font-black text-[11px] uppercase tracking-widest">Tarix va Arxiv</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="search-container mb-12">
-              <div className="glass-panel p-2 flex items-center relative overflow-hidden">
-                 <div className="p-4 ml-2">
-                   <Search size={24} className="opacity-30" />
-                 </div>
-                 <input 
+            {/* Telemetry Panel */}
+            <Row className="telemetry-row g-4">
+              <Col xs={12} sm={6} lg={3}>
+                <div className="telemetry-card">
+                  <div className="telemetry-icon-box">
+                    <Server size={22} />
+                  </div>
+                  <div className="telemetry-info">
+                    <span className="telemetry-label">Tizim holati</span>
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="telemetry-value text-success">ONLINE</span>
+                      <div className="neon-pulse-dot" />
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              <Col xs={12} sm={6} lg={3}>
+                <div 
+                  className="telemetry-card cursor-pointer"
+                  onClick={() => setView('active')}
+                >
+                  <div className="telemetry-icon-box" style={{ color: 'var(--chilonzor-red)', background: 'rgba(228, 28, 45, 0.08)' }}>
+                    <Activity size={22} />
+                  </div>
+                  <div className="telemetry-info">
+                    <span className="telemetry-label">Faol yozuvlar</span>
+                    <span className="telemetry-value">{totalActiveEntries} ta ochiq</span>
+                  </div>
+                </div>
+              </Col>
+              <Col xs={12} sm={6} lg={3}>
+                <div className="telemetry-card">
+                  <div className="telemetry-icon-box" style={{ color: 'var(--yunusobod-green)', background: 'rgba(0, 166, 81, 0.08)' }}>
+                    <Database size={22} />
+                  </div>
+                  <div className="telemetry-info">
+                    <span className="telemetry-label">Jami jurnallar</span>
+                    <span className="telemetry-value">{journalTypes.length} turdagi</span>
+                  </div>
+                </div>
+              </Col>
+              <Col xs={12} sm={6} lg={3}>
+                <div className="telemetry-card">
+                  <div className="telemetry-icon-box" style={{ color: 'var(--ozbekiston-blue)', background: 'rgba(0, 174, 239, 0.08)' }}>
+                    <Clock size={22} />
+                  </div>
+                  <div className="telemetry-info">
+                    <span className="telemetry-label">Live Soat</span>
+                    <span className="telemetry-value tracking-wider">{currentTime}</span>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+
+            {/* Search & Filters Section */}
+            <div className="search-filter-section">
+              <div className="creative-search-box flex items-center p-1 w-full">
+                <div className="p-3 ml-2 text-muted">
+                  <Search size={20} className="opacity-45" />
+                </div>
+                <input 
                   type="text" 
-                  className="bg-transparent border-0 w-full h-16 px-4 font-bold text-xl outline-none placeholder:opacity-20" 
-                  placeholder="Jurnal turini qidiring..." 
+                  className="bg-transparent border-0 w-full h-12 px-3 font-semibold text-lg outline-none placeholder:opacity-30" 
+                  placeholder="Jurnal turini yoki kodini yozing..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                 />
+                />
+                {searchTerm && (
+                  <button 
+                    onClick={() => setSearchTerm('')}
+                    className="p-3 bg-transparent border-0 text-muted hover:text-danger transition-colors"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+
+              <div className="premium-filter-tabs">
+                <button 
+                  onClick={() => setCategoryFilter('All')}
+                  className={`filter-tab ${categoryFilter === 'All' ? 'active' : ''}`}
+                >
+                  Barchasi
+                </button>
+                <button 
+                  onClick={() => setCategoryFilter('DU')}
+                  className={`filter-tab ${categoryFilter === 'DU' ? 'active' : ''}`}
+                >
+                  Harakat (DU)
+                </button>
+                <button 
+                  onClick={() => setCategoryFilter('EU')}
+                  className={`filter-tab ${categoryFilter === 'EU' ? 'active' : ''}`}
+                >
+                  Energetika (EU)
+                </button>
               </div>
             </div>
 
-            <div className="journal-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {sortedTypes.map((type, i) => (
-                <motion.div
-                  key={type._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  onClick={() => handleSelectType(type)}
-                  className="card-metro p-6 group cursor-pointer border-2 hover:border-primary/40 relative overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <FileText size={80} strokeWidth={1} />
-                  </div>
-                  <div className="p-4 bg-metro-accent-glass rounded-2xl w-fit mb-5 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                    <FileText size={24} />
-                  </div>
-                  <h3 className="title-liquid text-xl mb-3 group-hover:text-primary transition-colors">{type.name}</h3>
-                  <p className="text-[11px] font-medium opacity-50 mb-6 leading-relaxed line-clamp-2">
-                    {type.description || 'Elektron qayd daftari. Xavfsizlik va aniqlik kafolati.'}
-                  </p>
-                  
-                  <div className="d-flex align-items-center justify-content-between">
-                    <span className="badge-glass">{type.code}</span>
-                    <div className="p-3 bg-white/5 rounded-xl group-hover:translate-x-2 transition-transform duration-500">
-                      <ChevronRight size={24} className="opacity-40" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            {/* Journal Grid */}
+            <motion.div 
+              className="journal-grid row g-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+            >
+              {categoryFilteredTypes.map((type) => {
+                const cardDetails = getJournalCardDetails(type.code);
+                const activeCount = activeCounts[type.code] || 0;
 
-            {filteredTypes.length === 0 && (
+                return (
+                  <Col key={type._id} xs={12} sm={6} md={4} lg={4} xl={4}>
+                    <motion.div
+                      variants={itemVariants}
+                      whileHover={{ y: -8 }}
+                      onClick={() => handleSelectType(type)}
+                      className={`premium-journal-card ${cardDetails.themeClass} cursor-pointer`}
+                    >
+                      {/* Background Hover Gradient */}
+                      <div className="hover-gradient-bg" />
+
+                      {/* Rail Line glowing footer */}
+                      <div className="card-rail-line" />
+
+                      <div className="card-top">
+                        <div className="card-icon-wrapper">
+                          {cardDetails.icon}
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                          {activeCount > 0 && (
+                            <Badge bg="danger" className="rounded-pill animate-pulse">
+                              {activeCount} faol
+                            </Badge>
+                          )}
+                          <span className="card-code-badge">{type.code}</span>
+                        </div>
+                      </div>
+
+                      <div className="card-body-content">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted mb-1 block">
+                          {cardDetails.tagline}
+                        </span>
+                        <h3 className="card-title">{type.name}</h3>
+                        <p className="card-desc">
+                          {type.description || cardDetails.desc}
+                        </p>
+                      </div>
+
+                      <div className="card-footer-info">
+                        <span className="card-stat">
+                          <span className="stat-dot" />
+                          ONLINE HISOBOT
+                        </span>
+                        <div className="card-arrow">
+                          <ChevronRight size={20} />
+                        </div>
+                      </div>
+                    </motion.div>
+                  </Col>
+                );
+              })}
+            </motion.div>
+
+            {categoryFilteredTypes.length === 0 && (
               <div className="text-center py-20 opacity-30">
                 <ClipboardList size={64} className="mx-auto mb-6" />
-                <p className="text-xl font-bold uppercase tracking-widest italic">Hech narsa topilmadi</p>
+                <p className="text-xl font-bold uppercase tracking-widest italic">Hech qanday jurnal topilmadi</p>
               </div>
             )}
           </motion.div>
         )}
 
         {(view === 'create' || view === 'history' || view === 'active') && (
-          <div key="form" className="fade-in">
-            <div className="mb-3 d-flex align-items-center gap-3">
+          <motion.div 
+            key="form" 
+            className="fade-in-up"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="mb-4 d-flex align-items-center gap-3">
               <button 
                 onClick={() => setView('list')}
                 className="btn-metro-back"
@@ -203,8 +437,8 @@ const Journals = () => {
               </button>
               <div>
                 <span className="text-muted" style={{ fontSize: '11px' }}>Hozirgi bo'lim: </span>
-                <span style={{ fontWeight: 'bold', fontSize: '13px' }}>
-                  {view === 'create' ? `${selectedType?.name}` : view === 'active' ? 'Yopilmagan Yozuvlar' : 'Stansiya Tarixi'}
+                <span className="text-primary font-bold" style={{ fontSize: '13px' }}>
+                  {view === 'create' ? `${selectedType?.name} (Yaratish)` : view === 'active' ? 'Yopilmagan Faol Yozuvlar' : 'Stansiya Tarixi'}
                 </span>
               </div>
             </div>
@@ -269,7 +503,7 @@ const Journals = () => {
             ) : (
               <JournalHistory />
             )}
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

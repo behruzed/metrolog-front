@@ -68,12 +68,12 @@ const JournalHistory = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="m-0">Jurnal Tarixi</h2>
         <div className="d-flex gap-2">
-          <div className="position-relative">
-            <Search size={14} className="position-absolute" style={{ left: '8px', top: '8px', opacity: 0.5 }} />
+          <div className="position-relative d-flex align-items-center">
+            <Search size={14} className="position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }} />
             <input 
               type="text" 
               className="journal-1c-input" 
-              style={{ paddingLeft: '28px', width: '250px' }}
+              style={{ paddingLeft: '32px', width: '250px' }}
               placeholder="Qidirish..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -117,13 +117,19 @@ const JournalHistory = () => {
                 <td>{entry.createdBy?.name}</td>
                 <td>
                   {entry.journalTypeId?.code === 'DU-5' ? (
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: entry.data?.journal_status === 'closed' ? '#28a745' : '#fd7e14' }}>
-                      {entry.data?.journal_status === 'closed' ? 'Chiqdi' : 'Tunelda'}
-                    </span>
+                    entry.data?.journal_status === 'closed' ? (
+                      <span className="journal-badge journal-badge-success">Chiqdi</span>
+                    ) : (
+                      <span className="journal-badge journal-badge-warning">Tunelda</span>
+                    )
                   ) : (
-                    <span style={{ fontSize: '11px', color: entry.status === 'verified' ? 'green' : (entry.status === 'pending' ? 'orange' : 'red') }}>
-                      {entry.status === 'verified' ? 'Tasdiqlangan' : (entry.status === 'pending' ? 'Kutilmoqda' : 'Rad etilgan')}
-                    </span>
+                    entry.status === 'verified' ? (
+                      <span className="journal-badge journal-badge-success">Tasdiqlangan</span>
+                    ) : entry.status === 'pending' ? (
+                      <span className="journal-badge journal-badge-warning">Kutilmoqda</span>
+                    ) : (
+                      <span className="journal-badge journal-badge-danger">Rad etilgan</span>
+                    )
                   )}
                 </td>
                 <td>

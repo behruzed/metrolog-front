@@ -1,8 +1,23 @@
 import axios from 'axios';
 import useAuthStore from '../store/authStore';
 
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_API_URL || '/api';
+  
+  if (envUrl.startsWith('http://localhost') || envUrl.startsWith('https://localhost') || envUrl.startsWith('http://127.0.0.1')) {
+    try {
+      const url = new URL(envUrl);
+      url.hostname = window.location.hostname;
+      return url.toString();
+    } catch (e) {
+      console.error('Failed to parse baseURL URL, falling back to original:', e);
+    }
+  }
+  return envUrl;
+};
+
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: getBaseURL(),
 });
 
 // Add Interceptor to attach both tokens to the request

@@ -3,6 +3,7 @@ import { Spinner, Modal } from 'react-bootstrap';
 import { AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import axios from '../api/axios';
 import { toast } from 'react-hot-toast';
+import DU46TemplatePanel from './DU46TemplatePanel';
 
 const OpenDU46Tracker = ({ onUpdate }) => {
   const [entries, setEntries] = useState([]);
@@ -11,6 +12,23 @@ const OpenDU46Tracker = ({ onUpdate }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [entryToClose, setEntryToClose] = useState(null);
   const [confirmData, setConfirmData] = useState({ measures_taken: '' });
+  const [stations, setStations] = useState([]);
+
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const { data } = await axios.get('/auth/stations');
+        setStations(data.map(s => s.name));
+      } catch (err) {
+        setStations(['Bodomzor', 'Shahriston', 'Yunusobod', 'Turkiston', 'Minor', 'Abdulla Qodiriy', 'Paxtakor', 'Chorsu']);
+      }
+    };
+    fetchStations();
+  }, []);
+
+  const handleOtpiskaApply = (text) => {
+    setConfirmData(prev => ({ ...prev, measures_taken: text }));
+  };
 
   useEffect(() => {
     fetchOpenEntries();
@@ -117,40 +135,55 @@ const OpenDU46Tracker = ({ onUpdate }) => {
         </table>
       )}
 
-      <Modal show={showConfirmModal} onHide={() => !closing && setShowConfirmModal(false)} centered size="md">
+      <Modal show={showConfirmModal} onHide={() => !closing && setShowConfirmModal(false)} centered size="lg">
         <Modal.Header closeButton style={{ padding: '10px 15px' }}>
-          <Modal.Title style={{ fontSize: '16px', fontWeight: 'bold' }}>Nosozlikni Bartaraf Etish</Modal.Title>
+          <Modal.Title style={{ fontSize: '16px', fontWeight: 'bold' }}>Nosozlikni Bartaraf Etish (DU-46)</Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-4">
-          <div className="mb-3">
-             <p className="mb-1" style={{ fontSize: '14px' }}><b>Nosozlik:</b> {entryToClose?.data.malfunction_desc}</p>
-          </div>
-          <div className="journal-1c-form-group mb-4">
-            <label className="d-block mb-1">Shikastlanish sabablari va ko‘rilgan choralar:</label>
-            <textarea 
-              className="journal-1c-input w-100"
-              style={{ height: '120px' }}
-              placeholder="Batafsil yozing..."
-              value={confirmData.measures_taken}
-              onChange={(e) => setConfirmData(prev => ({ ...prev, measures_taken: e.target.value }))}
-            />
-          </div>
-          
-          <div className="d-flex gap-2 justify-content-end mt-4">
-            <button 
-              className="journal-1c-btn journal-1c-btn-primary" 
-              onClick={confirmClose}
-              disabled={closing}
-            >
-              {closing ? 'Saqlanmoqda...' : 'Yopish va Saqlash'}
-            </button>
-            <button 
-              className="btn-metro-back" 
-              onClick={() => setShowConfirmModal(false)}
-              disabled={closing}
-            >
-              <X size={14} /> Bekor qilish
-            </button>
+          <div className="du5-split-layout">
+            {/* Left Col: Textarea & Buttons */}
+            <div className="du5-form-col">
+              <div className="mb-3">
+                 <p className="mb-1" style={{ fontSize: '14px' }}><b>Nosozlik:</b> {entryToClose?.data.malfunction_desc}</p>
+                 {entryToClose?.data.malfunction_desc === "Boshqa (Qo'lda kiritish)" && entryToClose?.data.malfunction_desc_custom && (
+                   <div className="mb-2 p-2 border rounded" style={{ fontSize: '12.5px', fontStyle: 'italic', background: 'rgba(0,0,0,0.02)' }}>
+                     {entryToClose.data.malfunction_desc_custom}
+                   </div>
+                 )}
+              </div>
+              <div className="journal-1c-form-group mb-4">
+                <label className="d-block mb-1" style={{ fontWeight: 'bold' }}>Shikastlanish sabablari va ko‘rilgan choralar:</label>
+                <textarea 
+                  className="journal-1c-input w-100"
+                  style={{ height: '180px', maxWidth: '100%' }}
+                  placeholder="Shablondan tanlang yoki ko'rilgan choralarni yozing..."
+                  value={confirmData.measures_taken}
+                  onChange={(e) => setConfirmData(prev => ({ ...prev, measures_taken: e.target.value }))}
+                />
+              </div>
+              
+              <div className="d-flex gap-2 justify-content-end mt-4">
+                <button 
+                  className="journal-1c-btn journal-1c-btn-primary" 
+                  onClick={confirmClose}
+                  disabled={closing}
+                >
+                  {closing ? 'Saqlanmoqda...' : 'Yopish va Saqlash'}
+                </button>
+                <button 
+                  className="btn-metro-back" 
+                  onClick={() => setShowConfirmModal(false)}
+                  disabled={closing}
+                >
+                  <X size={14} /> Bekor qilish
+                </button>
+              </div>
+            </div>
+
+            {/* Right Col: Template Panel */}
+            <div className="du5-template-col" style={{ width: '320px', position: 'static' }}>
+              <DU46TemplatePanel mode="otpiska" onApply={handleOtpiskaApply} stations={stations} />
+            </div>
           </div>
         </Modal.Body>
       </Modal>

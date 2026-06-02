@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Container, Row, Col, Card, Button, Badge, Spinner } from 'react-bootstrap';
-import { MessageSquare, Bell, BellOff, CheckCircle2, AlertTriangle, Clock, Paperclip, Send, ShieldAlert, AlertCircle, ArrowUpRight } from 'lucide-react';
+import { MessageSquare, Bell, BellOff, CheckCircle2, AlertTriangle, Clock, Paperclip, Send, ShieldAlert, AlertCircle, ArrowUpRight, Globe } from 'lucide-react';
 import axios from '../api/axios';
 import { socket } from '../utils/socket';
 import useAuthStore from '../store/authStore';
@@ -50,7 +50,7 @@ const Messages = () => {
   const markAsRead = async (id) => {
     try {
       await axios.post(`/messages/${id}/read`);
-      // Update local state to reflect change for read UI if needed (omitted for brevity)
+      setMessages(prev => prev.map(m => m._id === id ? { ...m, isRead: true } : m));
     } catch (err) {
       console.error('Error marking message as read:', err);
     }
@@ -96,7 +96,7 @@ const Messages = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className={`message-card ${msg.isUrgent ? 'urgent' : ''}`}
+              className={`message-card ${msg.isUrgent ? 'urgent' : ''} ${msg.isRead ? 'read' : ''}`}
             >
               {msg.isUrgent && (
                 <div className="urgent-badge shadow-lg">SHOSHILINCH</div>
@@ -117,13 +117,20 @@ const Messages = () => {
                 </div>
 
                 <div className="actions">
-                   <Button 
-                    onClick={() => markAsRead(msg._id)}
-                    className="btn-metro px-6 py-3 border-2 border-transparent hover:border-primary/20 bg-white/5 group"
-                   >
-                     <CheckCircle2 size={18} className="text-success group-hover:scale-110 transition-transform" />
-                     <span className="text-[10px] font-black tracking-widest text-metro-foreground">O'QILDI</span>
-                   </Button>
+                   {msg.isRead ? (
+                     <div className="d-flex align-items-center gap-2 px-6 py-3 text-success font-black text-[10px] tracking-widest bg-success/5 border border-success/20 rounded-xl">
+                       <CheckCircle2 size={16} />
+                       <span>O'QILGAN</span>
+                     </div>
+                   ) : (
+                     <Button 
+                      onClick={() => markAsRead(msg._id)}
+                      className="btn-metro px-6 py-3 border-2 border-transparent hover:border-primary/20 bg-white/5 group"
+                     >
+                       <CheckCircle2 size={18} className="text-success group-hover:scale-110 transition-transform" />
+                       <span className="text-[10px] font-black tracking-widest text-metro-foreground">O'QILDI</span>
+                     </Button>
+                   )}
                 </div>
               </div>
             </motion.div>

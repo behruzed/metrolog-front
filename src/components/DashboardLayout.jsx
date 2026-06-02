@@ -75,8 +75,8 @@ const DashboardLayout = () => {
             <div className="brand-glow" />
           </div>
           <div className="brand-text-container">
-             <h1 className="brand-title">UZ METRO</h1>
-             <p className="brand-subtitle">O'ZBEKISTON METROPOLITENI</p>
+             <h1 className="brand-title">METROLOG</h1>
+             <p className="brand-subtitle">TOSHKENT METROPOLITENI</p>
           </div>
         </div>
 
