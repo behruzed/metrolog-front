@@ -97,48 +97,50 @@ const JournalHistory = () => {
       {loading ? (
         <div className="text-center py-5"><Spinner animation="border" size="sm" /></div>
       ) : (
-        <table className="journal-1c-table">
-          <thead>
-            <tr>
-              <th>Vaqt</th>
-              <th>Jurnal</th>
-              <th>Harakat / Ma'lumot</th>
-              <th>Xodim</th>
-              <th>Holat</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredEntries.map((entry) => (
-              <tr key={entry._id} style={{ cursor: 'pointer' }} onClick={() => {setSelectedEntry(entry); setShowDetailModal(true);}}>
-                <td style={{ whiteSpace: 'nowrap' }}>{entry.data?.recordedAt || new Date(entry.createdAt).toLocaleString('uz-UZ')}</td>
-                <td><b>{entry.journalTypeId?.code}</b></td>
-                <td>{getActionDescription(entry)}</td>
-                <td>{entry.createdBy?.name}</td>
-                <td>
-                  {entry.journalTypeId?.code === 'DU-5' ? (
-                    entry.data?.journal_status === 'closed' ? (
-                      <span className="journal-badge journal-badge-success">Chiqdi</span>
-                    ) : (
-                      <span className="journal-badge journal-badge-warning">Tunelda</span>
-                    )
-                  ) : (
-                    entry.status === 'verified' ? (
-                      <span className="journal-badge journal-badge-success">Tasdiqlangan</span>
-                    ) : entry.status === 'pending' ? (
-                      <span className="journal-badge journal-badge-warning">Kutilmoqda</span>
-                    ) : (
-                      <span className="journal-badge journal-badge-danger">Rad etilgan</span>
-                    )
-                  )}
-                </td>
-                <td>
-                  <button className="journal-1c-btn" style={{ padding: '0 5px' }}>Ochish</button>
-                </td>
+        <div className="table-responsive custom-scrollbar">
+          <table className="journal-1c-table">
+            <thead>
+              <tr>
+                <th>Vaqt</th>
+                <th>Jurnal</th>
+                <th>Harakat / Ma'lumot</th>
+                <th>Xodim</th>
+                <th>Holat</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredEntries.map((entry) => (
+                <tr key={entry._id} style={{ cursor: 'pointer' }} onClick={() => {setSelectedEntry(entry); setShowDetailModal(true);}}>
+                  <td style={{ whiteSpace: 'nowrap' }}>{entry.data?.recordedAt || new Date(entry.createdAt).toLocaleString('uz-UZ')}</td>
+                  <td><b>{entry.journalTypeId?.code}</b></td>
+                  <td>{getActionDescription(entry)}</td>
+                  <td>{entry.createdBy?.name}</td>
+                  <td>
+                    {entry.journalTypeId?.code === 'DU-5' ? (
+                      entry.data?.journal_status === 'closed' ? (
+                        <span className="journal-badge journal-badge-success">Chiqdi</span>
+                      ) : (
+                        <span className="journal-badge journal-badge-warning">Tunelda</span>
+                      )
+                    ) : (
+                      entry.status === 'verified' ? (
+                        <span className="journal-badge journal-badge-success">Tasdiqlangan</span>
+                      ) : entry.status === 'pending' ? (
+                        <span className="journal-badge journal-badge-warning">Kutilmoqda</span>
+                      ) : (
+                        <span className="journal-badge journal-badge-danger">Rad etilgan</span>
+                      )
+                    )}
+                  </td>
+                  <td>
+                    <button className="journal-1c-btn" style={{ padding: '0 5px' }}>Ochish</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} size="lg">

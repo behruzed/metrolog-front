@@ -462,28 +462,30 @@ const JournalForm = ({ type, onSuccess, du2Action }) => {
                     <h5 className="m-0" style={{ fontSize: '14px' }}>Xodimlar roʻyxati</h5>
                     <button type="button" className="journal-1c-btn" onClick={addPersonnelRow}><Plus size={14} /> Qoʻshish</button>
                   </div>
-                  <table className="journal-1c-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: '40px' }}>№</th>
-                        <th>Guvohnoma raqami</th>
-                        <th>Toʻliq F.I.SH</th>
-                        <th style={{ width: '40px' }}></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {personnelRows.map((row, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td><input type="text" className="journal-1c-input w-100" style={{ border: 'none', padding: '0' }} value={row.certificateId} onChange={(e) => handlePersonnelChange(index, 'certificateId', e.target.value)} /></td>
-                          <td><input type="text" className="journal-1c-input w-100" style={{ border: 'none', padding: '0' }} value={row.fullName} onChange={(e) => handlePersonnelChange(index, 'fullName', e.target.value)} /></td>
-                          <td>
-                            <button type="button" className="text-danger border-0 bg-transparent" onClick={() => removePersonnelRow(index)}><Trash2 size={14} /></button>
-                          </td>
+                  <div className="table-responsive custom-scrollbar">
+                    <table className="journal-1c-table">
+                      <thead>
+                        <tr>
+                          <th style={{ width: '40px' }}>№</th>
+                          <th>Guvohnoma raqami</th>
+                          <th>Toʻliq F.I.SH</th>
+                          <th style={{ width: '40px' }}></th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {personnelRows.map((row, index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td><input type="text" className="journal-1c-input w-100" style={{ border: 'none', padding: '0' }} value={row.certificateId} onChange={(e) => handlePersonnelChange(index, 'certificateId', e.target.value)} /></td>
+                            <td><input type="text" className="journal-1c-input w-100" style={{ border: 'none', padding: '0' }} value={row.fullName} onChange={(e) => handlePersonnelChange(index, 'fullName', e.target.value)} /></td>
+                            <td>
+                              <button type="button" className="text-danger border-0 bg-transparent" onClick={() => removePersonnelRow(index)}><Trash2 size={14} /></button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
 

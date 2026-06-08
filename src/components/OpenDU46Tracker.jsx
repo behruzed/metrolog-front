@@ -96,43 +96,45 @@ const OpenDU46Tracker = ({ onUpdate }) => {
           <b>Barcha nosozliklar bartaraf etilgan</b>
         </div>
       ) : (
-        <table className="journal-1c-table">
-          <thead>
-            <tr>
-              <th>Xabar vaqti</th>
-              <th>Nosozlik tavsifi</th>
-              <th>Xabar berish usuli</th>
-              <th>Qabul qildi</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr key={entry._id}>
-                <td style={{ whiteSpace: 'nowrap' }}>{entry.data?.record_time || new Date(entry.createdAt).toLocaleString('uz-UZ')}</td>
-                <td>
-                  <div style={{ fontSize: '12px', maxWidth: '300px' }}>{entry.data.malfunction_desc}</div>
-                </td>
-                <td>
-                   <span className="badge-glass" style={{ fontSize: '10px' }}>{entry.data.notification_method}</span>
-                </td>
-                <td>
-                   <div style={{ fontSize: '11px' }}>{entry.data.technician_name} {entry.data.technician_phone && `(${entry.data.technician_phone})`}</div>
-                   <div style={{ fontSize: '10px', opacity: 0.6 }}>{entry.createdBy?.name}</div>
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <button
-                    className="journal-1c-btn journal-1c-btn-primary"
-                    onClick={() => handleCloseClick(entry)}
-                    disabled={closing === entry._id}
-                  >
-                    {closing === entry._id ? '...' : 'Bartaraf etish'}
-                  </button>
-                </td>
+        <div className="table-responsive custom-scrollbar">
+          <table className="journal-1c-table">
+            <thead>
+              <tr>
+                <th>Xabar vaqti</th>
+                <th>Nosozlik tavsifi</th>
+                <th>Xabar berish usuli</th>
+                <th>Qabul qildi</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry._id}>
+                  <td style={{ whiteSpace: 'nowrap' }}>{entry.data?.record_time || new Date(entry.createdAt).toLocaleString('uz-UZ')}</td>
+                  <td>
+                    <div style={{ fontSize: '12px', maxWidth: '300px' }}>{entry.data.malfunction_desc}</div>
+                  </td>
+                  <td>
+                     <span className="badge-glass" style={{ fontSize: '10px' }}>{entry.data.notification_method}</span>
+                  </td>
+                  <td>
+                     <div style={{ fontSize: '11px' }}>{entry.data.technician_name} {entry.data.technician_phone && `(${entry.data.technician_phone})`}</div>
+                     <div style={{ fontSize: '10px', opacity: 0.6 }}>{entry.createdBy?.name}</div>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button
+                      className="journal-1c-btn journal-1c-btn-primary"
+                      onClick={() => handleCloseClick(entry)}
+                      disabled={closing === entry._id}
+                    >
+                      {closing === entry._id ? '...' : 'Bartaraf etish'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <Modal show={showConfirmModal} onHide={() => !closing && setShowConfirmModal(false)} centered size="lg">

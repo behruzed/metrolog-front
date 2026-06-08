@@ -77,47 +77,49 @@ const OpenDU8Tracker = ({ onUpdate }) => {
           <b>Barcha kalitlar topshirilgan</b>
         </div>
       ) : (
-        <table className="journal-1c-table">
-          <thead>
-            <tr>
-              <th>Olingan vaqti</th>
-              <th>Xodim (F.I.Sh)</th>
-              <th>Lavozim / Departament</th>
-              <th>Maqsad</th>
-              <th>Guvohnoma</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr key={entry._id}>
-                <td style={{ whiteSpace: 'nowrap' }}>{entry.data?.record_time || new Date(entry.createdAt).toLocaleString('uz-UZ')}</td>
-                <td>
-                  <div style={{ fontWeight: 'bold' }}>{entry.data.employee_name}</div>
-                </td>
-                <td>
-                  <div style={{ fontSize: '11px' }}>{entry.data.position}</div>
-                  <div style={{ fontSize: '10px', opacity: 0.6 }}>{entry.data.department}</div>
-                </td>
-                <td>
-                  <div style={{ fontSize: '11px' }}>{entry.data.purpose}</div>
-                </td>
-                <td>
-                   <div style={{ fontSize: '11px' }}>{entry.data.licence_id}</div>
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <button
-                    className="journal-1c-btn journal-1c-btn-primary"
-                    onClick={() => handleCloseClick(entry)}
-                    disabled={closing === entry._id}
-                  >
-                    {closing === entry._id ? '...' : 'Kalitni topshirdi'}
-                  </button>
-                </td>
+        <div className="table-responsive custom-scrollbar">
+          <table className="journal-1c-table">
+            <thead>
+              <tr>
+                <th>Olingan vaqti</th>
+                <th>Xodim (F.I.Sh)</th>
+                <th>Lavozim / Departament</th>
+                <th>Maqsad</th>
+                <th>Guvohnoma</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry._id}>
+                  <td style={{ whiteSpace: 'nowrap' }}>{entry.data?.record_time || new Date(entry.createdAt).toLocaleString('uz-UZ')}</td>
+                  <td>
+                    <div style={{ fontWeight: 'bold' }}>{entry.data.employee_name}</div>
+                  </td>
+                  <td>
+                    <div style={{ fontSize: '11px' }}>{entry.data.position}</div>
+                    <div style={{ fontSize: '10px', opacity: 0.6 }}>{entry.data.department}</div>
+                  </td>
+                  <td>
+                    <div style={{ fontSize: '11px' }}>{entry.data.purpose}</div>
+                  </td>
+                  <td>
+                     <div style={{ fontSize: '11px' }}>{entry.data.licence_id}</div>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button
+                      className="journal-1c-btn journal-1c-btn-primary"
+                      onClick={() => handleCloseClick(entry)}
+                      disabled={closing === entry._id}
+                    >
+                      {closing === entry._id ? '...' : 'Kalitni topshirdi'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <Modal show={showConfirmModal} onHide={() => !closing && setShowConfirmModal(false)} centered size="md">

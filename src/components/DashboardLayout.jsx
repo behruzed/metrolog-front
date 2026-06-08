@@ -26,7 +26,19 @@ const DashboardLayout = () => {
   const { employee, station, logoutEmployee, theme } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1200);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1200) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = () => {
     logoutEmployee();
@@ -67,6 +79,13 @@ const DashboardLayout = () => {
 
   return (
     <div className={`min-h-screen d-flex ${isSidebarOpen ? 'sidebar-open' : ''} ${theme === 'dark' ? 'dark' : ''} bg-[var(--metro-background)]`}>
+      {/* Backdrop overlay for mobile/tablet */}
+      {isSidebarOpen && (
+        <div 
+          className="sidebar-backdrop" 
+          onClick={() => setIsSidebarOpen(false)} 
+        />
+      )}
       {/* Professional Dashboard Aside */}
       <aside className={`sidebar-epic ${station?.distance ? `distance-glow-${station.distance}` : ''}`}>
         <div className="sidebar-header">

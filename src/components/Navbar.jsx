@@ -29,11 +29,22 @@ const Navbar = ({ isDashboard = false, onToggleSidebar, isSidebarOpen }) => {
       <div className="navbar-container-epic">
         
         {/* Brand Section */}
-        <div className="navbar-brand-epic" onClick={() => navigate('/')}>
-          <div className="logo-box-epic">M</div>
-          <div className="brand-text">
-            <h1>MetroLog</h1>
-            <p>Harakat xizmati</p>
+        <div className="flex items-center">
+          {isDashboard && (
+            <button 
+              onClick={onToggleSidebar}
+              className="btn-sidebar-toggle"
+              title="Menu"
+            >
+              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          )}
+          <div className="navbar-brand-epic" onClick={() => navigate('/')}>
+            <div className="logo-box-epic">M</div>
+            <div className="brand-text">
+              <h1>MetroLog</h1>
+              <p>Harakat xizmati</p>
+            </div>
           </div>
         </div>
 
