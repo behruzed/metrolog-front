@@ -4,7 +4,7 @@ import { FileText, ChevronRight, X, Check, ChevronLeft, Eye } from 'lucide-react
 const DU46_TEMPLATES = [
   {
     id: 'strelka_yuritma_tekshiruv',
-    name: 'Strelka elektr yuritmasini tekshirish',
+    name: 'Strelkali o‘tkazgichning  o‘tkazish mexanizmini tekshirish',
     icon: '🔀',
     color: '#006ce4',
     description: 'Elektr dvigatellarning tok kuchini o‘lchash, yuritmalarni tekshirish',
@@ -12,10 +12,10 @@ const DU46_TEMPLATES = [
       { key: 'station_name', label: 'Stansiya nomi', type: 'station_select', required: true },
       { key: 'strelka_number', label: 'Strelka raqami (№)', type: 'text', placeholder: 'Masalan: 1, 2, 3...', required: true }
     ],
-    buildZapis: (v) => 
-      `“${v.station_name || '___'}” stansiyasida yo‘nalishlarni oldindan tayyorlab, navbatchini ogohlantirgan holda, №${v.strelka_number || '___'}-sonli strelkalarda normal o‘tkazish va friksiyada ishlash jarayonida elektr dvigatellarning tok kuchini o‘lchagan holda, strelka elektr yuritmalarini tashqi va ichki tekshirish ishlari olib boriladi. Ish davomida tekshirilayotgan strelkani boshqaruv pultidan o‘tkazish taqiqlanadi. Yo‘nalish tayyorlanishi haqida oldindan xabar beriladi. ShN, DSCP`,
-    buildOtpiska: (v) => 
-      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarda normal o‘tkazish va friksiyada ishlash jarayonida elektr dvigatellarning tok kuchini o‘lchagan holda, strelka elektr yuritmalarini tashqi va ichki tekshirish ishlari yakunlandi. Strelkalar tekshirildi, soz holatda ishlamoqda, elektr dvigatellarning tok kuchi me’yorda. ShN, DSCP`
+    buildZapis: (v) =>
+      `“${v.station_name || '___'}” stansiyasida yo‘nalishlarni oldindan tayyorlab, navbatchini ogohlantirgan holda, №${v.strelka_number || '___'}-sonli strelkalarda normal o‘tkazish va friksiyada ishlash jarayonida elektr dvigatellarning tok kuchini o‘lchagan holda, strelka elektr yuritmalarini tashqi va ichki tekshirish ishlari olib boriladi. Ish davomida tekshirilayotgan strelkani boshqaruv pultidan o‘tkazish taqiqlanadi. Yo‘nalish tayyorlanishi haqida oldindan xabar berilsin. ShN, DSSP`,
+    buildOtpiska: (v) =>
+      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarda normal o‘tkazish va friksiyada ishlash jarayonida elektr dvigatellarning tok kuchini o‘lchagan holda, strelka elektr yuritmalarini tashqi va ichki tekshirish ishlari yakunlandi. Strelkalar tekshirildi, soz holatda ishlamoqda, elektr dvigatellarning tok kuchi me’yorda. ShN, DSSP`
   },
   {
     id: 'kurbel_bloklash',
@@ -27,8 +27,13 @@ const DU46_TEMPLATES = [
       { key: 'kurbel_number', label: 'Kurbel raqami (№)', type: 'text', placeholder: 'Masalan: 1, 2...', required: true },
       { key: 'technician_id', label: 'Texnik ID (ShN-...)', type: 'text', placeholder: 'Masalan: 12, 15...', required: true }
     ],
-    buildZapis: (v) => 
-      `№${v.kurbel_number || '___'}-sonli kurbel bloklash apparatida bloklandi, №${v.kurbel_number || '___'}-sonli kurbelni bo‘shatish tugmasi ShN-${v.technician_id || '___'} bosma iz bilan muhrlandi. ShN, DSCP`
+    buildZapis: (v) => {
+      const kurbelNum = (v.kurbel_number || '').toString().trim();
+      if (kurbelNum === '1') {
+        return `1-sonli kurbel qurilmasi saqlash qutisiga joylashtirildi, saqlash qutisi ShN-${v.technician_id || '___'} bosma iz (ottisk) bilan muhrlandi. ShN, DSSP`;
+      }
+      return `№${v.kurbel_number || '___'}-sonli kurbel qurilmasi bloklash apparatiga o'rnatildi, kurbelni bo‘shatish tugmasi ShN-${v.technician_id || '___'} bosma iz (ottisk) bilan muhrlandi. ShN, DSSP`;
+    }
   },
   {
     id: 'pult_tablo_tugma_tekshiruv',
@@ -57,9 +62,9 @@ const DU46_TEMPLATES = [
       { key: 'e2m_from', label: 'E2M (dan)', type: 'text', placeholder: 'Masalan: 3', onlyOtpiska: true },
       { key: 'e2m_to', label: 'E2M (gacha)', type: 'text', placeholder: 'Masalan: 4', onlyOtpiska: true }
     ],
-    buildZapis: (v) => 
-      `“${v.station_name || '___'}” stansiyasining pult-tablosida tugmalar hisoblagichlari ko‘rsatkichlarini tekshirish, tozalash va to‘g‘ri ko‘rsatishini sozlash hamda ularning ishlash holatini tekshirish ishlari olib boriladi. ShN, DSCP`,
-    buildOtpiska: (v) => 
+    buildZapis: (v) =>
+      `“${v.station_name || '___'}” stansiyasining pult-tablosida tugmalar hisoblagichlari ko‘rsatkichlarini tekshirish, tozalash va to‘g‘ri ko‘rsatishini sozlash hamda ularning ishlash holatini tekshirish ishlari olib boriladi. ShN, DSSP`,
+    buildOtpiska: (v) =>
       `“${v.station_name || '___'}” stansiyasining pult-tablosida tugmalar hisoblagichlari ko‘rsatkichlarini tekshirish, tozalash va to‘g‘ri ko‘rsatishini sozlash ishlari yakunlandi. Bunda hisoblagich ko‘rsatkichlari quyidagicha o‘zgardi:
 ChK58- ${v.chk58_from || '___'}÷${v.chk58_to || '___'}
 ChK40M- ${v.chk40m_from || '___'}÷${v.chk40m_to || '___'}
@@ -70,7 +75,7 @@ Ch1- ${v.ch1_from || '___'}÷${v.ch1_to || '___'}
 Ch2- ${v.ch2_from || '___'}÷${v.ch2_to || '___'}
 E1M- ${v.e1m_from || '___'}÷${v.e1m_to || '___'}
 E2M- ${v.e2m_from || '___'}÷${v.e2m_to || '___'}
-ShN, DSCP`
+ShN, DSSP`
   },
   {
     id: 'strelka_ochirish_tugma_muhr',
@@ -82,8 +87,8 @@ ShN, DSCP`
       { key: 'strelka_number', label: 'Strelka raqami (№)', type: 'text', placeholder: 'Masalan: 1, 2...', required: true },
       { key: 'technician_id', label: 'Texnik ID (ShN-...)', type: 'text', placeholder: 'Masalan: 14, 18...', required: true }
     ],
-    buildZapis: (v) => 
-      `№${v.strelka_number || '___'}-sonli strelkalarni o‘chirish tugmasi ShN-${v.technician_id || '___'} bosma iz bilan muhrlandi. ShN, DSCP`
+    buildZapis: (v) =>
+      `№${v.strelka_number || '___'}-sonli strelkalarni o‘chirish tugmasi ShN-${v.technician_id || '___'} bosma iz bilan muhrlandi. ShN, DSSP`
   },
   {
     id: 'strelka_zichlik_tekshiruv',
@@ -95,10 +100,10 @@ ShN, DSCP`
       { key: 'station_name', label: 'Stansiya nomi', type: 'station_select', required: true },
       { key: 'strelka_number', label: 'Strelka raqami (№)', type: 'text', placeholder: 'Masalan: 2, 4...', required: true }
     ],
-    buildZapis: (v) => 
-      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarning ramali relsga zich yopishishini qalinligi 4mm bo‘lgan shablon qo‘yish orqali tekshirish ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar beriladi. ShN, PD, DSCP`,
-    buildOtpiska: (v) => 
-      `“${v.station_name || '___'}” stansiyasida strelkalarning ramali relsga zich yopishishini tekshirish yakunlandi. Qalinligi 4mm bo‘lgan shablon qo‘yilganda №${v.strelka_number || '___'}-sonli strelkalar holat nazoratiga ega emas. ShN, PD, DSCP`
+    buildZapis: (v) =>
+      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarning ramali relsga zich yopishishini qalinligi 4mm bo‘lgan shablon qo‘yish orqali tekshirish ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar berilsin. ShN, PD, DSSP`,
+    buildOtpiska: (v) =>
+      `“${v.station_name || '___'}” stansiyasida strelkalarning ramali relsga zich yopishishini tekshirish yakunlandi. Qalinligi 4mm bo‘lgan shablon qo‘yilganda №${v.strelka_number || '___'}-sonli strelkalar holat nazoratiga ega emas. ShN, PD, DSSP`
   },
   {
     id: 'strelka_parrak_yengillik',
@@ -109,10 +114,10 @@ ShN, DSCP`
     fields: [
       { key: 'strelka_number', label: 'Strelka raqami (№)', type: 'text', placeholder: 'Masalan: 3, 5...', required: true }
     ],
-    buildZapis: (v) => 
-      `№${v.strelka_number || '___'}-sonli strelkalarda kurbel yordamida o‘tkazilganda parraklarning yurish yengilligini tekshirish ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar beriladi. ShN, PD, DSCP`,
-    buildOtpiska: (v) => 
-      `Kurbel yordamida o‘tkazilganda parraklarning yurish yengilligini tekshirish yakunlandi. Kurbel bilan o‘tkazilganda №${v.strelka_number || '___'}-sonli strelka parraklari silkinishlarsiz, ravon o‘tmoqda. ShN, PD, DSCP`
+    buildZapis: (v) =>
+      `№${v.strelka_number || '___'}-sonli strelkalarda kurbel yordamida o‘tkazilganda parraklarning yurish yengilligini tekshirish ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar berilsin. ShN, PD, DSSP`,
+    buildOtpiska: (v) =>
+      `Kurbel yordamida o‘tkazilganda parraklarning yurish yengilligini tekshirish yakunlandi. Kurbel bilan o‘tkazilganda №${v.strelka_number || '___'}-sonli strelka parraklari silkinishlarsiz, ravon o‘tmoqda. ShN, PD, DSSP`
   },
   {
     id: 'strelka_qutilari_tozalash',
@@ -124,10 +129,10 @@ ShN, DSCP`
       { key: 'station_name', label: 'Stansiya nomi', type: 'station_select', required: true },
       { key: 'strelka_number', label: 'Strelka raqami (№)', type: 'text', placeholder: 'Masalan: 4, 6...', required: true }
     ],
-    buildZapis: (v) => 
-      `“${v.station_name || '___'}” stansiyasining aylanma chiqish (oborotny s'ezd) yo‘lida №${v.strelka_number || '___'}-sonli strelkalar qutilarini ichki tekshirish va tozalash ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar beriladi. ShN, DSCP`,
-    buildOtpiska: (v) => 
-      `“${v.station_name || '___'}” stansiyasining aylanma chiqish (oborotny s'ezd) yo‘lida №${v.strelka_number || '___'}-sonli strelkalar qutilarini ichki tekshirish va tozalash ishlari yakunlandi, strelka qutilari texnik me’yorlarga javob beradi. ShN, DSCP`
+    buildZapis: (v) =>
+      `“${v.station_name || '___'}” stansiyasining aylanma chiqish (oborotny s'ezd) yo‘lida №${v.strelka_number || '___'}-sonli strelkalar qutilarini ichki tekshirish va tozalash ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar berilsin. ShN, DSSP`,
+    buildOtpiska: (v) =>
+      `“${v.station_name || '___'}” stansiyasining aylanma chiqish (oborotny s'ezd) yo‘lida №${v.strelka_number || '___'}-sonli strelkalar qutilarini ichki tekshirish va tozalash ishlari yakunlandi, strelka qutilari texnik me’yorlarga javob beradi. ShN, DSSP`
   },
   {
     id: 'serga_ugolnik_izolyatsiya',
@@ -139,10 +144,10 @@ ShN, DSCP`
       { key: 'station_name', label: 'Stansiya nomi', type: 'station_select', required: true },
       { key: 'strelka_number', label: 'Strelka raqami (№)', type: 'text', placeholder: 'Masalan: 1, 5...', required: true }
     ],
-    buildZapis: (v) => 
-      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarda parrak sergalari va asosiy burchakliklar (fundamentalnie ugolniki) izolyatsiyasini tekshirish ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar beriladi. ShN, PD, DSCP`,
-    buildOtpiska: (v) => 
-      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarda parrak sergalari va asosiy burchakliklar izolyatsiyasini tekshirish yakunlandi, parrak sergalari va asosiy burchakliklar izolyatsiyasi qarshiligi PTE (Texnik foydalanish qoidalari) talablariga javob beradi. ShN, PD, DSCP`
+    buildZapis: (v) =>
+      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarda parrak sergalari va asosiy burchakliklar (fundamentalnie ugolniki) izolyatsiyasini tekshirish ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar berilsin. ShN, PD, DSSP`,
+    buildOtpiska: (v) =>
+      `“${v.station_name || '___'}” stansiyasida №${v.strelka_number || '___'}-sonli strelkalarda parrak sergalari va asosiy burchakliklar izolyatsiyasini tekshirish yakunlandi, parrak sergalari va asosiy burchakliklar izolyatsiyasi qarshiligi PTE (Texnik foydalanish qoidalari) talablariga javob beradi. ShN, PD, DSSP`
   },
   {
     id: 'rele_kuchlanish_olchash',
@@ -154,10 +159,10 @@ ShN, DSCP`
       { key: 'station_name', label: 'Stansiya nomi', type: 'station_select', required: true },
       { key: 'strelka_number', label: 'Strelka raqami (№)', type: 'text', placeholder: 'Masalan: 2, 6...', required: true }
     ],
-    buildZapis: (v) => 
-      `В релейной АРС на станции “${v.station_name || '___'}” будет производится измерение напряжения на контрольных стрелочных реле стрелок №${v.strelka_number || '___'} с переводом стрелок. О приготовлении маршрутов сообщат заранее. ШН, ДСЦП`,
-    buildOtpiska: (v) => 
-      `В релейной АРС на станции “${v.station_name || '___'}” измерение напряжения на контрольных стрелочных реле стрелок №${v.strelka_number || '___'} закончена напряжения на КСР соответствует тех нормам. ШН, ДСЦП`
+    buildZapis: (v) =>
+      `“${v.station_name || '___'}” stansiyasining rele xonasida (releynaya) №${v.strelka_number || '___'}-sonli strelkalarni boshqa holatga o‘tkazgan holda nazorat relelaridagi kuchlanishni o‘lchash ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar berilsin. ShN, DSSP`,
+    buildOtpiska: (v) =>
+      `“${v.station_name || '___'}” stansiyasining rele xonasida (releynaya) №${v.strelka_number || '___'}-sonli strelkalarning nazorat relelaridagi kuchlanishni o‘lchash ishlari yakunlandi, kuchlanish texnik me’yorlarga javob beradi. ShN, DSSP`
   },
   {
     id: 'mayatnik_transmitter_almashtirish',
@@ -186,10 +191,10 @@ ShN, DSCP`
       { key: 'e2m_from', label: 'E2M (dan)', type: 'text', placeholder: 'Masalan: 3', onlyOtpiska: true },
       { key: 'e2m_to', label: 'E2M (gacha)', type: 'text', placeholder: 'Masalan: 4', onlyOtpiska: true }
     ],
-    buildZapis: (v) => 
-      `В релейной АРС на станции “${v.station_name || '___'}” будет производится замена маятникового трансмиттера. О приготовлении маршрутов сообщат заранее. ШН, ДСЦП`,
-    buildOtpiska: (v) => 
-      `В релейной АРС на станции “${v.station_name || '___'}” замена маятникового трансмиттера закончена проверена работает исправно. Bunda hisoblagich ko‘rsatkichlari quyidagicha o‘zgardi:
+    buildZapis: (v) =>
+      `“${v.station_name || '___'}” stansiyasining rele xonasida (releynaya) mayatnikli transmitterni almashtirish ishlari olib boriladi. Yo‘nalish tayyorlanishi haqida oldindan xabar berilsin. ShN, DSSP`,
+    buildOtpiska: (v) =>
+      `“${v.station_name || '___'}” stansiyasining rele xonasida (releynaya) mayatnikli transmitterni almashtirish ishlari yakunlandi va tekshirildi, soz holatda ishlamoqda. Bunda hisoblagich ko‘rsatkichlari quyidagicha o‘zgardi:
 ChK58- ${v.chk58_from || '___'}÷${v.chk58_to || '___'}
 ChK40M- ${v.chk40m_from || '___'}÷${v.chk40m_to || '___'}
 DM- ${v.dm_from || '___'}÷${v.dm_to || '___'}
@@ -199,7 +204,7 @@ Ch1- ${v.ch1_from || '___'}÷${v.ch1_to || '___'}
 Ch2- ${v.ch2_from || '___'}÷${v.ch2_to || '___'}
 E1M- ${v.e1m_from || '___'}÷${v.e1m_to || '___'}
 E2M- ${v.e2m_from || '___'}÷${v.e2m_to || '___'}
-ShN, DSCP`
+ShN, DSSP`
   }
 ];
 
@@ -262,10 +267,10 @@ const DU46TemplatePanel = ({ mode = 'zapis', onApply, stations = [] }) => {
 
   const handleApply = () => {
     if (!selectedTemplate) return;
-    const text = mode === 'zapis' 
-      ? selectedTemplate.buildZapis(fieldValues) 
+    const text = mode === 'zapis'
+      ? selectedTemplate.buildZapis(fieldValues)
       : selectedTemplate.buildOtpiska(fieldValues);
-    
+
     onApply(text);
     handleClose();
   };

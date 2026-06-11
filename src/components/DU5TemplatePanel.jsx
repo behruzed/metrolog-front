@@ -6,7 +6,7 @@ import { FileText, ChevronRight, X, Check, ChevronLeft, Eye } from 'lucide-react
 // buildText(values, stations) → tayyor maqsad matni
 
 const TRACK_OPTIONS = ['1', '2', '3', '4', '1 va 2', '3 va 4', '1, 2, 3, 4'];
-const STRELKA_OPTIONS = ['1', '2', '3', '4', '5', '6', '1 va 2', '3 va 4', '5 va 6', '1,2,3,4', '1,2,3,4,5,6'];
+const STRELKA_OPTIONS = ['1', '2', '3', '4', '5', '6', '7', '8', '1 va 2', '3 va 4', '5 va 6', '7 va 8', '1,2,3,4', '5,6,7,8', '1,2,3,4,5,6', '1,2,3,4,5,6,7,8'];
 const DIRECTION_OPTIONS = ['I-bosh yo\'l', 'II-bosh yo\'l', 'I va II-bosh yo\'l'];
 const DIRECTION_SHORT = ['I', 'II', 'I va II'];
 const SECTION_OPTIONS = [
@@ -14,16 +14,16 @@ const SECTION_OPTIONS = [
   'I-bosh yo\'l',
   'II-bosh yo\'l',
   'I va II-bosh yo\'l',
-  'Kesma (perегon)',
+  'Peregon/uchastka',
   'Uchastka',
 ];
 const PK_OPTIONS = Array.from({ length: 30 }, (_, i) => `PK ${(i + 1) * 10}`);
 
 const DU5_TEMPLATES = [
-  // ─── 1. Aylanma chiqishda tarkibni to'xtatish ──────────────────────────────
+  // ─── 1. Aylanma yo`lga tarkibni qo\'yish (otstoy) ──────────────────────────────
   {
     id: 'aylanma_toxtatish',
-    name: 'Aylanma chiqishda tarkib to\'xtatish',
+    name: 'Aylanma yo`lga tarkibni qo\'yish (otstoy)',
     icon: '🚉',
     color: '#006ce4',
     description: 'Oborotny s\'ezd — tarkibni to\'xtatish (otboy)',
@@ -72,7 +72,7 @@ const DU5_TEMPLATES = [
     name: 'Yo\'l va kontakt relsi ko\'rigi',
     icon: '🔎',
     color: '#0ea5e9',
-    description: 'Kesma bo\'ylab yo\'l va kontakt relslarini aylanib tekshirish',
+    description: 'Kesma/uchastka bo\'ylab yo\'l va kontakt relslarini ko`zdan kechirish',
     fields: [
       {
         key: 'direction',
@@ -95,7 +95,7 @@ const DU5_TEMPLATES = [
       },
     ],
     buildText: (v) =>
-      `${v.direction} kesma ${v.station_from} – ${v.station_to} bo'ylab yo'l va kontakt rel'slarini aylanib tekshirish (obkhod)`,
+      `${v.direction} peregon  ${v.station_from} – ${v.station_to} bo'ylab yol va kontakt relslarini ko'zdan kechirish (obkhod)`,
   },
 
   // ─── 4. Kesma/uchastka bo'ylab nasos ko'rikdan o'tkazish ───────────────────
@@ -141,7 +141,7 @@ const DU5_TEMPLATES = [
       },
     ],
     buildText: (v) =>
-      `${v.direction} kesma ${v.station_from} – ${v.station_to}, ${v.pk_number} (raqami) — ${v.nasos_number} nasosni ko'rikdan o'tkazish`,
+      `${v.direction} peregon/uchastka ${v.station_from} – ${v.station_to}, ${v.pk_number} (raqami) — ${v.nasos_number} nasosni ko'rikdan o'tkazish`,
   },
 
   // ─── 5. Svetofor lampasini almashtirish ────────────────────────────────────
@@ -150,7 +150,7 @@ const DU5_TEMPLATES = [
     name: 'Svetofor lampasini almashtirish',
     icon: '🚦',
     color: '#ef4444',
-    description: 'Kesma bo\'ylab kuygan svetofor lampasini almashtirish',
+    description: 'Kesma/uchastka bo\'ylab kuygan svetofor lampasini almashtirish',
     fields: [
       {
         key: 'direction',
@@ -180,25 +180,25 @@ const DU5_TEMPLATES = [
       },
     ],
     buildText: (v) =>
-      `${v.direction} kesma ${v.station_from} – ${v.station_to} — ${v.signal_name} svetoforning kuygan lampasini almashtirish`,
+      `${v.direction} peregon/uchastka ${v.station_from} – ${v.station_to} — ${v.signal_name} svetoforning kuygan lampasini almashtirish`,
   },
 
   // ─── 6. Aylanma chiqishda yo'l va strelkani ko'rish (RV o'tgandan keyin) ──
   {
     id: 'aylanma_rv_korik',
-    name: 'Aylanma chiqishda yo\'l ko\'rik (RV keyin)',
+    name: 'Aylanma yo\'ldagi strelkali o`tkazgichni ko`zdan kechirish (RV o\'tgandan keyin)',
     icon: '🔍',
     color: '#10b981',
-    description: 'Rel\'sovoz (RV) o\'tgandan keyin yo\'l va strelkani ko\'rikdan o\'tkazish',
+    description: 'Relsovoz (RV) o\'tgandan keyin yo\'l va strelkani ko\'rikdan o\'tkazish',
     fields: [],
     buildText: () =>
-      `Aylanma chiqishda rel'sovoz (RV) o'tgandan keyin yo'l va strelkani vizual ko'rikdan o'tkazish`,
+      `Aylanma chiqish yo'lidagi strelkali o'tkazgichlarni ko'zdan kechirish (RV o'tgandan keyin)`,
   },
 
   // ─── 7. Aylanma chiqishda strelka o'tkazgichlarni ko'rish ─────────────────
   {
     id: 'aylanma_strelka_korik',
-    name: 'Aylanma chiqishda strelka ko\'rik',
+    name: 'Aylanma yo\'ldagi strelkali o\'tkazgichlarni ko\'zdan kechirish (Vizual ko\'rik)',
     icon: '🔀',
     color: '#f97316',
     description: 'Aylanma chiqishdagi strelka o\'tkazgichlarni ko\'rikdan o\'tkazish',
@@ -212,16 +212,16 @@ const DU5_TEMPLATES = [
       },
     ],
     buildText: (v) =>
-      `Aylanma chiqishda ${v.strelka_numbers}-raqamli strelka o'tkazgichlarni vizual ko'rikdan o'tkazish`,
+      `Aylanma yo'ldagi ${v.strelka_numbers}-raqamli strelka o'tkazgichlarni vizual ko'rikdan o'tkazish`,
   },
 
   // ─── 8. Oqish joylarini to'sish (tunel inshootlari) ───────────────────────
   {
     id: 'oqish_tosish',
-    name: 'Oqish joylarini to\'sish (tunel inshootlari)',
+    name: 'Suv oqishini bartaraf etish (tunel inshootlari)',
     icon: '💧',
     color: '#0284c7',
-    description: 'Tunel inshootlarida kontrol naynos, oqish joylarini bartaraf etish',
+    description: 'Tunel inshootlarida nasoslarni ko\'rikdan o\'tkazish, suv oqish joylarini bartaraf etish',
     fields: [
       {
         key: 'section',
@@ -250,7 +250,7 @@ const DU5_TEMPLATES = [
   // ─── 9. DU-46 buyrug'i bo'yicha strelkalarda ish ──────────────────────────
   {
     id: 'du46_strelka_ish',
-    name: 'DU-46 bo\'yicha strelkalarda ish',
+    name: 'DU-46 jurnalidagi qayd bo\'yicha strelkali o\'tkazgichlardagi ish',
     icon: '📋',
     color: '#7c3aed',
     description: 'DU-46 ga yozilgan kamchilikni KMO ko\'rsatmasi bo\'yicha bartaraf etish',
@@ -271,16 +271,16 @@ const DU5_TEMPLATES = [
       },
     ],
     buildText: (v) =>
-      `${v.section} — ${v.strelka_numbers}-raqamli strelkalarda DU-46 buyrug'iga yozilgan KMO ko'rsatmasi bo'yicha kamchilikni bartaraf etish`,
+      `${v.section} — ${v.strelka_numbers}-raqamli strelkali o'tkazgichlarda DU-46 jurnalidagi qayd bo'yicha KMO/KKMO da aniqlangan kamchilikni bartaraf etish`,
   },
 
   // ─── 10. Kesma bo'ylab rel's va kontakt relslari tekshiruvi ───────────────
   {
     id: 'yol_korik_kesma',
-    name: 'Kesma bo\'ylab yo\'l ko\'rik (kechqurun)',
+    name: 'Peregon/uchastka bo\'ylab yo\'l ko\'rik (kechqurun)',
     icon: '🌙',
     color: '#1e40af',
-    description: 'Tungi texnik ko\'rik — yo\'l va kontakt rel\'si holati',
+    description: 'Tungi texnik ko\'rik — yo\'l va kontakt Relsi holati',
     fields: [
       {
         key: 'direction',
@@ -306,12 +306,13 @@ const DU5_TEMPLATES = [
         label: 'Ish turi',
         type: 'select',
         options: [
-          'Yo\'l va kontakt rel\'sini aylanib tekshirish (obkhod)',
+          'Yo\'l va kontakt relsini aylanib tekshirish (obkhod)',
           'Texnik ko\'rik (texosmotr)',
-          'Rel\'s birikmalari va stiqlarni tekshirish',
+          'Rels birikmalari va ulanmalarini tekshirish',
           'Drenaj tizimini tekshirish',
           'Tunel devorini tekshirish',
           'Yoritish tizimini tekshirish',
+          '-',
         ],
         required: true,
       },
@@ -323,7 +324,7 @@ const DU5_TEMPLATES = [
   // ─── 11. Bekat/kesma yo'l ta'mirlash ishlari ──────────────────────────────
   {
     id: 'yol_tamir_kesma',
-    name: 'Kesma/bekatda yo\'l ta\'mirlash',
+    name: 'Peregon/bekatda yo\'l ta\'mirlash',
     icon: '🛠️',
     color: '#ca8a04',
     description: 'Kesma yoki bekatda rejali yo\'l ta\'mirlash ishlari',
@@ -352,9 +353,9 @@ const DU5_TEMPLATES = [
         label: 'Ish turi',
         type: 'select',
         options: [
-          'Rel\'s almashtirish',
+          'Rels almashtirish',
           'Shpal almashtirish',
-          'Rel\'s birlashtirish (stiqlar)',
+          'Rels birlashtirish (stiqlar)',
           'Yo\'l tekislash (nivelirovat\')',
           'Shuruplar va bloklash elementlarini mustahkamlash',
           'Ballast tozalash va zichlash',
@@ -373,7 +374,7 @@ const DU5_TEMPLATES = [
     name: 'Elektr / kabel ishlari',
     icon: '⚡',
     color: '#d97706',
-    description: 'Kontakt rel\'s, kabel va elektr jihozlari ta\'mirlash',
+    description: 'Kontakt Rels, kabel va elektr jihozlari ta\'mirlash',
     fields: [
       {
         key: 'direction',
@@ -399,12 +400,12 @@ const DU5_TEMPLATES = [
         label: 'Ish turi',
         type: 'select',
         options: [
-          'Uchinchi rel\'s va ulanmalarni tekshirish va ta\'mirlash',
+          'Uchinchi Rels va ulanmalarni tekshirish va ta\'mirlash',
           'Elektr kabellarini ta\'mirlash va almashtirish',
           'Elektr muftalarini almashtirish',
           'Kabel kanallarini tekshirish',
           'Yoritish moslamalarini ta\'mirlash',
-          'Uchinchi rel\'s izolatorlarini almashtirish',
+          'Uchinchi Rels izolatorlarini almashtirish',
           'Tok o\'tkazuvchi shinalar ta\'mirlash',
         ],
         required: true,
@@ -420,7 +421,7 @@ const DU5_TEMPLATES = [
     name: 'Signal va aloqa ta\'mirlash',
     icon: '📡',
     color: '#059669',
-    description: 'Svetofor, ABB, rel\'s zanjirlari va aloqa tizimlarini ta\'mirlash',
+    description: 'Svetofor, ABB, Rels zanjirlari va aloqa tizimlarini ta\'mirlash',
     fields: [
       {
         key: 'direction',
@@ -447,7 +448,7 @@ const DU5_TEMPLATES = [
         type: 'select',
         options: [
           'Avtomatik blokirovka (ABB) tekshirish va ta\'mirlash',
-          'Rel\'s zanjirlarini tekshirish va ta\'mirlash',
+          'Rels zanjirlarini tekshirish va ta\'mirlash',
           'Svetofor lampalarini almashtirish',
           'Svetoforni sozlash va ta\'mirlash',
           'Aloqa kabellarini ta\'mirlash',

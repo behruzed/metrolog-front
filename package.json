@@ -106,7 +106,6 @@
     "keyv": "^4.5.4",
     "levn": "^0.4.1",
     "lightningcss": "^1.32.0",
-    "lightningcss-win32-x64-msvc": "^1.32.0",
     "locate-path": "^6.0.0",
     "lodash.merge": "^4.6.2",
     "loose-envify": "^1.4.0",
@@ -185,7 +184,11 @@
     "zod-validation-error": "^4.0.2",
     "zustand": "^5.0.12"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitejs/plugin-react": "^6.0.2"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
