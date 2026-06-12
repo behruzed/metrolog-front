@@ -20,6 +20,7 @@ import useAuthStore from '../store/authStore';
 import { Container } from 'react-bootstrap';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { socket } from '../utils/socket';
 import './DashboardLayout.scss';
 
 const DashboardLayout = () => {
@@ -39,6 +40,30 @@ const DashboardLayout = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (station) {
+      socket.connect();
+      socket.emit('join_room', station._id);
+      if (station.department) {
+        socket.emit('join_room', station.department);
+      }
+
+      const handleMessage = (message) => {
+        const notificationsEnabled = localStorage.getItem('notifications_enabled') !== 'false';
+        if (message.isUrgent && notificationsEnabled) {
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+          audio.play().catch(e => console.log('Global audio play failed:', e));
+        }
+      };
+
+      socket.on('receive_dispatcher_message', handleMessage);
+
+      return () => {
+        socket.off('receive_dispatcher_message', handleMessage);
+      };
+    }
+  }, [station]);
 
   const handleLogout = () => {
     logoutEmployee();

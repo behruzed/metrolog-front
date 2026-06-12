@@ -52,17 +52,19 @@ const Navbar = ({ isDashboard = false, onToggleSidebar, isSidebarOpen }) => {
         <div className="ml-auto flex items-center gap-4 lg:gap-6">
           
           {/* Status Hub (Hidden on small screens) */}
-          <div className="hidden xl:flex status-hub-epic">
-             <div className="status-item">
-                <span className="status-label">Post</span>
-                <span className="status-value">{station?.name || 'CENTRAL HUB'}</span>
-             </div>
-             <div className="status-divider" />
-             <div className="status-item text-right">
-                <span className="status-label">Agent</span>
-                <span className="status-value">{employee?.name || 'ROOT'}</span>
-             </div>
-          </div>
+          {isDashboard && (
+            <div className="hidden xl:flex status-hub-epic">
+               <div className="status-item">
+                  <span className="status-label">Post</span>
+                  <span className="status-value">{station?.name || 'CENTRAL HUB'}</span>
+               </div>
+               <div className="status-divider" />
+               <div className="status-item text-right">
+                  <span className="status-label">Agent</span>
+                  <span className="status-value">{employee?.name || 'ROOT'}</span>
+               </div>
+            </div>
+          )}
 
           {/* Theme & Notifications */}
           <div className="flex items-center gap-2">
@@ -78,32 +80,36 @@ const Navbar = ({ isDashboard = false, onToggleSidebar, isSidebarOpen }) => {
               )}
             </button>
             
-            <button className="btn-nav-liquid group relative" title="Xabarnomalar">
-              <Bell size={18} className="group-hover:animate-shake" />
-              <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-danger rounded-full border border-[var(--metro-glass)] shadow-[0_0_10px_rgba(239,68,68,0.5)] group-hover:scale-125 transition-transform" />
-            </button>
+            {isDashboard && (
+              <button className="btn-nav-liquid group relative" title="Xabarnomalar">
+                <Bell size={18} className="group-hover:animate-shake" />
+                <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-danger rounded-full border border-[var(--metro-glass)] shadow-[0_0_10px_rgba(239,68,68,0.5)] group-hover:scale-125 transition-transform" />
+              </button>
+            )}
           </div>
 
           {/* User Profile & Actions */}
-          <div className="nav-actions">
-            <div className="hidden sm:flex nav-profile-epic cursor-pointer">
-              <div className="profile-avatar-epic">
-                {employee?.name?.charAt(0) || 'U'}
+          {isDashboard && (
+            <div className="nav-actions">
+              <div className="hidden sm:flex nav-profile-epic cursor-pointer">
+                <div className="profile-avatar-epic">
+                  {employee?.name?.charAt(0) || 'U'}
+                </div>
+                <div className="profile-info">
+                  <span className="profile-name">{employee?.name || 'OPERATOR'}</span>
+                  <span className="profile-role">{employee?.role || 'SYSTEM OFFICER'}</span>
+                </div>
               </div>
-              <div className="profile-info">
-                <span className="profile-name">{employee?.name || 'OPERATOR'}</span>
-                <span className="profile-role">{employee?.role || 'SYSTEM OFFICER'}</span>
-              </div>
+              
+              <button 
+                onClick={handleLogout}
+                className="btn-nav-liquid danger group"
+                title="Tizimdan chiqish"
+              >
+                <LogOutIcon size={18} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
+              </button>
             </div>
-            
-            <button 
-              onClick={handleLogout}
-              className="btn-nav-liquid danger group"
-              title="Tizimdan chiqish"
-            >
-              <LogOutIcon size={18} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
+          )}
 
         </div>
       </div>

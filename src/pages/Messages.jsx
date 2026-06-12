@@ -11,7 +11,15 @@ const Messages = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const { station, employee, theme } = useAuthStore();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
+    return localStorage.getItem('notifications_enabled') !== 'false';
+  });
+
+  const toggleNotifications = () => {
+    const next = !notificationsEnabled;
+    setNotificationsEnabled(next);
+    localStorage.setItem('notifications_enabled', String(next));
+  };
 
   useEffect(() => {
     fetchMessages();
@@ -21,9 +29,6 @@ const Messages = () => {
 
     socket.on('receive_dispatcher_message', (message) => {
       setMessages(prev => [message, ...prev]);
-      if (message.isUrgent && notificationsEnabled) {
-        playNotificationSound();
-      }
     });
 
     return () => {
@@ -75,7 +80,7 @@ const Messages = () => {
           <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.2em] text-metro-foreground">Dispatcherlik ko'rsatmalari va e'lonlar markazi</p>
         </div>
         <Button 
-          onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+          onClick={toggleNotifications}
           className={`btn-metro h-14 px-8 border-2 ${notificationsEnabled ? 'btn-primary' : 'bg-white/5 border-white/10 text-metro-foreground/40'}`}
         >
           {notificationsEnabled ? <Bell size={20} className="animate-bounce" /> : <BellOff size={20} />}

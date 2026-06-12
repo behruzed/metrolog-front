@@ -316,7 +316,9 @@ const DU46TemplatePanel = ({ mode = 'zapis', onApply, stations = [] }) => {
       )}
 
       {isOpen && (
-        <div className="du5-template-panel">
+        <>
+          <div className="du5-template-backdrop" onClick={handleClose} />
+          <div className="du5-template-panel">
           <div className="du5-panel-header">
             <div className="du5-panel-title-row">
               {selectedTemplate && (
@@ -410,6 +412,7 @@ const DU46TemplatePanel = ({ mode = 'zapis', onApply, stations = [] }) => {
             </div>
           )}
         </div>
+        </>
       )}
     </>
   );

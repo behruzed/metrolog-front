@@ -688,9 +688,21 @@ body {
   background: rgba(233, 124, 25, 0.08);
   border: 1px solid rgba(233, 124, 25, 0.25);
   border-left: 4px solid #e97c19;
-  margin-left: 220px;
   max-width: 480px;
   width: 100%;
+}
+
+.journal-security-alert-offset {
+  margin-left: 220px;
+}
+
+@media (max-width: 768px) {
+  .journal-security-alert-offset {
+    margin-left: 0 !important;
+  }
+  .journal-security-alert-card {
+    max-width: 100% !important;
+  }
 }
 
 .dark .journal-security-alert-card {
@@ -717,16 +729,25 @@ body {
 /* Specific inputs styled cleanly inside dynamic grid tables */
 .journal-1c-table input {
   border: none !important;
-  background: transparent !important;
+  border-bottom: 1.5px dashed rgba(15, 131, 255, 0.25) !important;
+  background: rgba(150, 150, 150, 0.03) !important;
+  border-radius: 4px !important;
   box-shadow: none !important;
   height: 28px !important;
-  padding: 2px 4px !important;
+  padding: 2px 8px !important;
   width: 100%;
   color: inherit !important;
+  transition: all 0.3s ease;
+}
+
+.dark .journal-1c-table input {
+  border-bottom-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
 }
 
 .journal-1c-table input:focus {
   background: var(--metro-accent-glass) !important;
+  border-bottom: 1.5px solid var(--metro-accent) !important;
   border-radius: 4px;
   outline: none !important;
 }
@@ -1017,9 +1038,56 @@ body {
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
 }
 
+/* Template panel backdrop */
+.du5-template-backdrop {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  .du5-template-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1099;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .du5-template-panel {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    height: auto !important;
+    max-height: 85vh !important;
+    z-index: 1100 !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+    animation: du5PanelInModal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .du5-template-list {
+    max-height: 50vh !important;
+  }
+
+  .du5-template-form {
+    max-height: 55vh !important;
+  }
+}
+
 @keyframes du5PanelIn {
   from { opacity: 0; transform: translateY(15px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes du5PanelInModal {
+  from { opacity: 0; transform: translate(-50%, -45%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
 /* Panel Header styling */

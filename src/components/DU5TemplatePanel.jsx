@@ -600,7 +600,9 @@ const DU5TemplatePanel = ({ onApply, stations = [] }) => {
 
       {/* ── Panel (open state) ── */}
       {isOpen && (
-        <div className="du5-template-panel">
+        <>
+          <div className="du5-template-backdrop" onClick={handleClose} />
+          <div className="du5-template-panel">
           {/* Header */}
           <div className="du5-panel-header">
             <div className="du5-panel-title-row">
@@ -708,6 +710,7 @@ const DU5TemplatePanel = ({ onApply, stations = [] }) => {
             </div>
           )}
         </div>
+        </>
       )}
     </>
   );

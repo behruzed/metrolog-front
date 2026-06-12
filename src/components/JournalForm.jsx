@@ -435,7 +435,7 @@ const JournalForm = ({ type, onSuccess, du2Action }) => {
                       </div>
 
                       {field.name === 'malfunction_desc' && showOtherEmployee && (
-                        <div className="journal-security-alert-card" style={{ marginLeft: type.code === 'DU-46' ? '0' : '220px' }}>
+                        <div className={`journal-security-alert-card${type.code !== 'DU-46' ? ' journal-security-alert-offset' : ''}`}>
                           <h6>Qayd kirituvchi xodim login va paroli</h6>
                           <div className="mb-3">
                             <label>Login:</label>
@@ -476,8 +476,8 @@ const JournalForm = ({ type, onSuccess, du2Action }) => {
                         {personnelRows.map((row, index) => (
                           <tr key={index}>
                             <td>{index + 1}</td>
-                            <td><input type="text" className="journal-1c-input w-100" style={{ border: 'none', padding: '0' }} value={row.certificateId} onChange={(e) => handlePersonnelChange(index, 'certificateId', e.target.value)} /></td>
-                            <td><input type="text" className="journal-1c-input w-100" style={{ border: 'none', padding: '0' }} value={row.fullName} onChange={(e) => handlePersonnelChange(index, 'fullName', e.target.value)} /></td>
+                            <td><input type="text" className="journal-1c-input w-100" placeholder="Guvohnoma raqami" value={row.certificateId} onChange={(e) => handlePersonnelChange(index, 'certificateId', e.target.value)} /></td>
+                            <td><input type="text" className="journal-1c-input w-100" placeholder="Xodim F.I.Sh." value={row.fullName} onChange={(e) => handlePersonnelChange(index, 'fullName', e.target.value)} /></td>
                             <td>
                               <button type="button" className="text-danger border-0 bg-transparent" onClick={() => removePersonnelRow(index)}><Trash2 size={14} /></button>
                             </td>
